@@ -1,0 +1,112 @@
+{
+"presentation":"Timeglider",
+"title":"My Presentation",
+"description":"Filepicker says that web and mobile apps can only work with content on users' hard drives and can't access web-based files. Say, if a user wants to edit a photo on Facebook, it has to go back and forth with other applications. But if Facebook and a web app could speak to each other directly, it could be easier. Filepicker provides a single uniform API for developers, so that when they want to upload a file, they can pull them all directly from Facebook, Google Drive, Instagram, Box, and all the other places they have content stored online by just implementing a simple line of code. The startup says that developers love it, because it makes their applications better. The company has seen 20 percent week-over-week growth for last 12 weeks. The platform has 134 apps total, including Scribd, SurveyMonkey and Alfresco, and will be profitable next month.",
+"open_modal":true,
+"initial_zoom":49,
+"image_lane_height":100,
+"focus_date":"1991-06-12 12:00:00",
+"initial_timelines":["mr_life", "hj_life"],
+"timelines":[
+
+{"focus_date":"1991-06-12 12:00:00",
+"title":"michael",
+"id":"mr_life",
+"initial_zoom":"46",
+"active":"true",
+"bottom":"250",
+"events":[
+
+{   "startdate":"1968-08-20 12:00:00",
+	"enddate":"",
+	"title":"MHR born",
+	"description":"Valley hospital in Ridgewood, NJ, to Martha & Steve Richardson.<iframe src='http://techmeme.com' width=400 height=200></iframe>",
+	"icon":"circle_green.png",
+	"importance":"50",
+	"video": "http://techmeme.com/m/",
+	"link":"http://www.ridgewoodnj.net/main.cfm",
+	"id":"ev_0"
+},
+{   "startdate":"1981-09-01 12:00:00",
+	"enddate":"1986-06-01 12:00:00",
+	"title":"HHS",
+	"description":"Hanover (NH) High School.",
+	"icon":"square_blue.png",
+	"importance":"32",
+	"link":"http://hanoverhigh.us/Hanover/",
+	"id":"ev_3"
+},
+
+{   "startdate":"1999-06-19 12:00:00",
+	"enddate":"1999-06-19 12:00:00",
+	"title":"Married!",
+	"description":"in Amherst, MA",
+	"icon":"circle_red.png",
+	"importance":"42",
+	"id":"ev_3mar"
+},
+
+
+{   "startdate":"today",
+	"enddate":"",
+	"title":"today!",
+	"description":"Here in Boise Idaho.",
+	"icon":"star_orange.png",
+	"importance":"40",
+	"link":"",
+	"id":"ev_4"
+}
+]
+},
+
+{"focus_date":"1969-02-27 12:00:00",
+"title":"harriett was born in boise idaho in nineteen...",
+"description":"Harriett's life",
+"active":"true",
+"id":"hj_life",
+"initial_zoom":"42",
+"bottom":"100",
+"inverted":true,
+"events":[
+
+{   "startdate":"1969-02-27 12:00:00",
+	"enddate":"1969-02-27 12:00:00",
+	"title":"Harriett born",
+	"description":"St Lukes Hospital, Boise ID, to Walter and Diane Jastremsky",
+	"icon":"circle_green.png",
+	"importance":"50",
+	"id":"hj_ev_0"
+},
+{   "startdate":"1982-09-01 12:00:00",
+	"enddate":"1987-06-01 12:00:00",
+	"title":"Boise High",
+	"description":"Boise (NH) High School.",
+	"icon":"square_blue.png",
+	"importance":"32",
+	"id":"hj_ev_3"
+},
+
+{   "startdate":"1999-06-19 12:00:00",
+	"enddate":"1999-06-19 12:00:00",
+	"title":"Married!",
+	"description":"in Amherst, MA",
+	"icon":"circle_red.png",
+	"importance":"42",
+	"id":"ev_3mar"
+},
+
+{   
+	"startdate":"today",
+	"enddate":"",
+	"title":"today!",
+	"description":"Here in Boise Idaho.",
+	"icon":"star_orange.png",
+	"importance":"40",
+	"link":"",
+	"id":"ev_4"
+}]
+
+}
+
+]
+}

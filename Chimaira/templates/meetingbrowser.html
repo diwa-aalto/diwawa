@@ -1,0 +1,448 @@
+{% extends "metrobase.html" %}
+{% block javascript %}
+var jplayer; 
+var mbproject = 0;
+var timeline;
+var data;
+var audio_files = Array();
+var jplayer_active=0;
+function onselect(event) {
+	var sel = timeline.getSelection();
+  	if (sel.length) {
+    	if (sel[0].row != undefined) {
+      		var row = sel[0].row;
+      		var item = timeline.getItem(row);
+      		$("div#snapshot").empty();
+      		$("div#screenshots").empty();
+      		jplayer.jPlayer("clearMedia");
+		 $('.pause').hide();
+		$('.play').show();
+
+      		//$("#canplay-icon").addClass("icon-blocked fg-color-red").removeClass("icon-music fg-color-blue");
+      		$('#row'+row).addClass("selected-row");
+      		if(item.end != undefined){
+      			timeline.setVisibleChartRange(item.start, item.end);
+      			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(2).html()).trigger('keyup');
+      		}else{
+      			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(1).html()).trigger('keyup');
+      			$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > b").attr('id'),'project_id':$("select#mbprojects option:selected").attr('id')},function(data){  		
+      			var audio = {};
+      			$.each(data,function(key,val){
+      				console.log(key+':'+val);
+      				if (val.indexOf("Snapshots") >= 0){
+      					$("div#snapshot").append('<a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="'+path_to_localhost(val)+'"/></a>');
+      				}else if(val.indexOf("Screenshots") >= 0){
+      					$("div#screenshots").append('<div><a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="'+path_to_localhost(val)+'"/></a></div>');
+      				}else if(val.indexOf("Audio") >= 0){
+      					audio[val.substring(val.lastIndexOf('.')+1)] = val;
+      				}
+      				});
+      				//jplayer.jPlayer("setMedia",audio);
+      			});
+      		}
+    	}
+	}else{
+  		$(".selected-row").removeClass('selected-row');
+  		$('#event_search').val('').trigger('keyup');
+  		$("div#snapshot").empty();
+      		$("div#screenshots").empty();
+      		jplayer.jPlayer("clearMedia");
+              $('.pause').hide();
+		$('.play').show();
+  	}
+}
+
+function initTimeline(data){
+var height = $(window).height()-$('header').outerHeight()-40;       	
+// specify options
+var options = {
+	'width':  '100%',
+    'height': height+'px',
+    'editable': false,
+    'style': 'box',
+	'axisOnTop':true,
+	'intervalMax':2628000000,
+	'intervalMin':300000,
+	showNavigation:true
+};
+
+// Instantiate our timeline object.
+timeline = new links.Timeline(document.getElementById('mytimeline'));
+
+// Draw our timeline with the created data and options
+timeline.draw(data, options);	
+links.events.addListener(timeline, 'select', onselect);
+}
+
+function getFileExtension(filename){
+	return filename.split('.').pop().toLowerCase();
+}
+function path_to_localhost(path){
+	if(path.indexOf("C:")>=0){
+		url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
+		console.log(url);
+		return url;
+	}
+	return path;
+}
+function isEmpty(map) {
+   for(var key in map) {
+      if (map.hasOwnProperty(key)) {
+         return false;
+   	}
+   }
+   return true;
+}
+function getFileName(filepath){
+	return filepath.replace(/^.*[\\\/]/, '');
+}
+function getDocHeight() {
+   	var db = document.body;
+	var dde = document.documentElement;
+	var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
+	return docHeight;
+}
+$(document).ready(function(){
+	jplayer = $('#jquery_jplayer_1').jPlayer({
+		swfPath: "/static/js",
+		supplied: "wav",
+		cssSelectorAncestor: "",
+		cssSelectors: {
+			videoPlay: "",
+			play: "#play",
+        	pause: "#pause",
+        	stop: "#stop",
+        	mute: "#mute",
+        	unmute: "#unmute",
+        	currentTime: "#currentTime",
+        	duration: "#duration"
+		},
+		wmode: "window"
+		});
+	 	
+$(document).on('click','.play',function(event){
+	var parent = $(this).closest('tr');
+	if (jplayer_active != parent.attr('event')){
+		$('.pause').hide();
+		$('.play').show();
+		jplayer.jPlayer("clearMedia");
+		jplayer_active=parent.attr('event');	
+	}
+	if(parent.hasClass('selected-row')){
+		event.stopPropagation();
+	}
+	if (isEmpty($('#jquery_jplayer_1').data("jPlayer").status.media)){	
+	jplayer.jPlayer("setMedia",audio_files[parent.attr('event')]);
+	}
+	jplayer.jPlayer("play");
+	$(this).hide();
+	$(this).next().show();
+	
+});
+$(document).on('click','.pause',function(event){
+	event.stopPropagation();
+	var parent = $(this).closest('tr');
+	jplayer.jPlayer("pause");
+	$(this).hide();
+	$(this).prev().show();
+});
+$(document).on('click','#all_events tr',function(){
+var start = $(this).attr('start');
+var end = ($(this).attr('end') != '' ? $(this).attr('end') : '');
+if (end == ''){
+	start = Date.parse($(this).attr('start').substring(0,19)).add(-3).minute();
+	end = new Date(start.getTime()).add(6).minute().toString('yyyy-MM-ddTHH:mm:ss');
+	start = start.toString('yyyy-MM-ddTHH:mm:ss');
+}
+//timeline.setVisibleChartRange(start,end );
+timeline.setSelection([{row: eval($(this).attr('id').substring(3))}]);
+$("selected-row").removeClass("selected-row");
+onselect();
+$(this).addClass("selected-row");
+});
+
+// Write on keyup event of keyword input element
+$("#event_search").keyup(function(){
+	$("#all_events").dataTable().fnFilter( $(this).val() );
+	if($(this).val() == ''){
+		$(".selected-row").removeClass('selected-row');
+	}
+	// When value of the input is not blank
+/*if( $(this).val() != ""){
+		// Show only matching TR, hide rest of them
+		$("#all_events tbody>tr").hide();
+		$("#all_events td:contains-ci('" + $(this).val() + "')").parent("tr").show();
+	}else{
+		// When there is no input or clean again, show everything back
+		$("#all_events tbody>tr").show();
+	}*/
+});
+$('.fancybox').fancybox({
+    helpers : {
+    title	: {type: 'outside'},
+	thumbs	: {
+				width	: 50,
+				height	: 50
+			},
+    overlay : {
+    	css : {'background' : 'rgba(58, 42, 45, 0.95)'}
+        }
+    }
+});
+$('div#loading').hide();
+$("#event_search").next().click(function(){console.log('click X');$('#event_search').val('').trigger('keyup');});
+function eventobject(id,type, start, end, title, content, hasAudio){
+this.id = id;
+this.type = type;
+this.start = start;
+this.end = end;
+this.title = title;
+this.content = content;	
+this.hasAudio=hasAudio;
+}
+
+
+$('#mbprojects').change(
+	function(){
+		if(mbproject != $(this).attr('id')){
+			$('#event_search').val('').trigger('keyup');
+  			$("div#snapshot").empty();
+      		$("div#screenshots").empty();
+      		jplayer.jPlayer("clearMedia");
+			mbproject = $('#mbprojects option:selected').attr('id');
+			console.log('selected id ='+mbproject);
+			$('#panel_handle').click();
+			$('#mytimeline').empty();
+			$('div#loading').show();
+			$('table#all_events tbody').empty();
+			$("#all_events").dataTable().fnClearTable();
+			$.ajax({
+    		type: "GET",
+   			 url: '/projects/'+mbproject+'/',
+    		contentType: "application/json; charset=utf-8",
+    		dataType: "json",
+    		success: function(data){
+
+				jsondata = data;
+				var events = new Array();
+				var pr_time, pr_file;
+				$.each(data,function(k,v){
+					var start, end, name;				
+					switch(k){
+						case 'sessions':
+										$.each(v,function(){
+												pr_time = null;
+												pr_file = '';
+												events.push(new eventobject(this.id,'Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
+												});
+												break;
+						case 'fileactions':
+										$.each(v,function(){
+													var action_time = Date.parse(this.action_time);
+													console.log(pr_time +':'+pr_file);
+													if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
+														console.log("same file and time");
+														events[events.length-1].content = events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
+													}else{
+													events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
+													pr_time = action_time.clone();
+													pr_file = this.file__path;
+													}
+												});
+												break;
+						case 'events':
+										$.each(v,function(){
+													pr_time = null;
+													pr_file = '';
+													events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,'<div class="icons '+this.title.toLowerCase().replace(' ','_')+'"><b id="' + this.id + '">'+this.title+'</b></div>'));
+												});
+												break;						
+						default:
+									break;	
+					}
+					if (start == undefined)
+						return true;
+					//$('table#all_events tbody').append('<tr start="'+start+'" end="'+end+'"><td>'+name+'</td><td>'+start+'</td><td>'+end+'</li>');
+					
+				});
+				events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
+				initTimeline(events);
+				$.each(events,function(k,v){ $('table#all_events tbody').append('<tr event="'+v.id+'" id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td><td></td></tr>');if(v.type=='Event'){check_event_audio(v.id,'#row'+k);}});
+				$('#all_events').dataTable( {
+        "sScrollY": "400px",
+        "bPaginate": false,
+        "bScrollCollapse": true,
+        "bSort": false,
+        "bInfo": false,
+        "bDestroy": true,
+        "sDom": 'lrtp',
+    } );	
+    $('div#loading').hide();
+			},
+    		error: function (xhr, textStatus, errorThrown) {
+       		 console.log(xhr.responseText);
+    		}
+		});
+			/*$.getJSON('/projects/'+mbproject+'/',function(data){
+
+				jsondata = data;
+				var events = new Array();
+				var pr_time, pr_file;
+				$.each(data,function(k,v){
+					var start, end, name;				
+					switch(k){
+						case 'sessions':
+										$.each(v,function(){
+												pr_time = null;
+												pr_file = '';
+												events.push(new eventobject(this.id,'Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
+												});
+												break;
+						case 'fileactions':
+										$.each(v,function(){
+													var action_time = Date.parse(this.action_time);
+													console.log(pr_time +':'+pr_file);
+													if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
+														console.log("same file and time");
+														events[events.length-1].content = events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
+													}else{
+													events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
+													pr_time = action_time.clone();
+													pr_file = this.file__path;
+													}
+												});
+												break;
+						case 'events':
+										$.each(v,function(){
+													pr_time = null;
+													pr_file = '';
+													events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,'<i class="icon-tag"></i>'+'<b id="' + this.id + '">'+this.title+'</b>'));
+												});
+												break;						
+						default:
+									break;	
+					}
+					if (start == undefined)
+						return true;
+					//$('table#all_events tbody').append('<tr start="'+start+'" end="'+end+'"><td>'+name+'</td><td>'+start+'</td><td>'+end+'</li>');
+					
+				});
+				events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
+				initTimeline(events);
+				$.each(events,function(k,v){ $('table#all_events tbody').append('<tr event="'+v.id+'" id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td><td></td></tr>');check_event_audio(v.id,'#row'+k);});
+				$('#all_events').dataTable( {
+        "sScrollY": "400px",
+        "bPaginate": false,
+        "bScrollCollapse": true,
+        "bSort": false,
+        "bInfo": false,
+        "bDestroy": true,
+        "sDom": 'lrtp',
+    } );	
+    $('div#loading').hide();
+			});*/
+		
+		}
+	});
+$('#mbprojects option[id="{% if activity.project %}{{activity.project.id}}{% else %}mb_project_0{% endif %}"]').prop('selected', true);	
+{% if activity.project %}
+$('#mbprojects').trigger('change');
+{% endif %}
+});
+function check_event_audio(event_id, obj_id){
+	$.get('/event_has_audio/',{ event_id:event_id}, function(res) {
+		if (res != '[{}]' && res != 'False'){
+			audio_files[event_id]=eval(res)[0];
+			console.log(res);
+			$(obj_id+' td:nth-child(5)').html('<a tabindex="1" class="play" href="javascript:;">play</a><a tabindex="1" class="pause" href="javascript:;">pause</a>');			
+			$(obj_id+' a.pause').hide();
+		}
+	});
+}
+function event_content(type,event){
+	console.log('event content');
+	var output = "";
+	switch(type){
+		case 'fileaction':
+		var action_time = Date.parse(event.action_time);
+		output = '<p><img src="/static/img/filetypes/'+getFileExtension(event.file__path)+'.png" style="float:left;"/>'+'<a target="_NEW" href="'+parse_projects_link(event.file__path)+'"><b id="' + event.file__id + '">'+getFileName(event.file__path)+'</a></b><br />'+action_time.toString("HH:mm")+fileaction_icon(event.action__name)+'</p>';
+		break;
+	}
+	return output;
+}
+function fileaction_icon(type){
+	console.log('icon-type');
+	var icon = '';
+	switch(type){
+		case 'Created':
+			icon='<i class="icon-new"></i>';
+			break;
+		case 'Updated':
+			icon='<i class="icon-file"></i>';
+			break;	
+		case 'Removed':
+			icon='<i class="icon-remove"></i>';
+			break;
+		case 'Opened':
+			icon='<i class="icon-book"></i>';
+			break;	
+		default:
+		icon = type;	
+	}
+	return icon;
+}
+// jQuery expression for case-insensitive filter
+$.extend($.expr[":"], 
+{
+    "contains-ci": function(elem, i, match, array) 
+	{
+		return (elem.textContent || elem.innerText || $(elem).text() || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+	}
+});
+function parse_projects_link(link){
+	var baseurl = "/static/Projects/";
+	baseurl += link.substr(link.indexOf("Projects")+9)
+	return baseurl.replace(/\\/g,"/");
+}
+{% endblock %}
+
+{% block pagetitle %}{% endblock %}
+
+{% block content %}
+<div class="grid">
+	<div class="row">
+		<div style="width:70%;float:left;min-height:600px;height:100%;">
+			<div id="loading"><img src="/static/img/loader.gif"/></div>
+			<div id="mytimeline" style=""></div>
+		</div>
+		<div style="width:30%;float:left;">
+			<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+			<h4>Choose project for browsing</h4>
+			<select id="mbprojects">
+				<option id="mb_project_0"></option>
+					{% for project in projects %}
+					<option id="{{project.id}}">{{project.name}}</option>
+					{% endfor %}
+			</select>
+			<div id="mb-images" class="image-collection">
+				<div id="snapshot"></div>
+				<div id="screenshots"></div>
+			</div>
+			<div style="clear:both;"></div>
+			<form>
+				<fieldset>
+					<legend>Search</legend>
+					<div class="input-control text" style="width:100%;float:left;margin-right:5px;">
+						<input id="event_search" type="text" />
+						<span class="helper"></span>
+					</div>
+				</fieldset>
+			</form>
+			<table id="all_events" class="striped bordered hovered">
+				<thead><tr><th>Event</th><th>Title</th><th>Start</th><th>End</th><th width="30px;">Audio</th></tr></thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,255 @@
+[
+{
+"id":"eventbrowser",
+"title":"Project Name",
+"focus_date":"2012-10-31 12:00:00",
+"initial_zoom":"30",
+"image_lane_height":100,
+"events":[
+
+
+{
+"id":"session1",
+"title": "Session1",
+"description":"Sample session",
+"startdate": "2012-05-05 12:00:00",
+"enddate": "2012-05-05 13:00:00",
+"importance":"60",
+"date_display":"no",
+"click_callback":"timeglider.eventActions.navigateTo",
+"navigateTo":{"zoom_level":1,"focus_date":"2012-05-05 12:30:00"},
+"y_position":200,
+"icon":"triangle_yellow.png"
+},
+{
+"id":"fileaction11",
+"title": "Manuaali.pdf",
+"description":"Manuaali.pdf",
+"startdate": "2012-05-05 12:05:00",
+"high_threshold":7,
+"importance":"50",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/pdf.png"
+},
+{
+"id":"fileaction12",
+"title": "Meidän_exceli.xslx",
+"description":"Meidän_exceli.xslx",
+"startdate": "2012-05-05 12:25:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/xlsx.png"
+},
+{
+"id":"fileaction13",
+"title": "Slides.ppt",
+"description":"Slides.ppt",
+"startdate": "2012-05-05 12:30:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/ppt.png"
+},
+{
+"id":"fileaction14",
+"title": "Screenshot.png",
+"description":"Screenshot.png",
+"startdate": "2012-05-05 12:55:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/png.png"
+},
+{
+"id":"session2",
+"title": "Session2",
+"description":"Sample session",
+"startdate": "2012-06-05 12:00:00",
+"enddate": "2012-06-05 13:00:00",
+"importance":"60",
+"date_display":"no",
+"click_callback":"timeglider.eventActions.navigateTo",
+"navigateTo":{"zoom_level":2,"focus_date":"2012-06-05 12:30:00"},
+"y_position":200,
+"icon":"triangle_yellow.png"
+},
+{
+"id":"fileaction21",
+"title": "Manuaali.pdf",
+"description":"Manuaali.pdf",
+"startdate": "2012-06-05 12:05:00",
+"high_threshold":7,
+"importance":"50",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/pdf.png"
+},
+{
+"id":"fileaction22",
+"title": "Meidän_exceli.xslx",
+"description":"Meidän_exceli.xslx",
+"startdate": "2012-06-05 12:25:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/xlsx.png"
+},
+{
+"id":"fileaction23",
+"title": "Slides.ppt",
+"description":"Slides.ppt",
+"startdate": "2012-06-05 12:30:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/ppt.png"
+},
+{
+"id":"fileaction24",
+"title": "Screenshot.png",
+"description":"Screenshot.png",
+"startdate": "2012-06-05 12:55:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/png.png"
+},
+{
+"id":"session3",
+"title": "Session3",
+"description":"Sample session",
+"startdate": "2012-07-05 12:00:00",
+"enddate": "2012-07-05 13:00:00",
+"importance":"60",
+"date_display":"no",
+"click_callback":"timeglider.eventActions.navigateTo",
+"navigateTo":{"zoom_level":2,"focus_date":"2012-07-05 12:30:00"},
+"y_position":200,
+"icon":"triangle_yellow.png"
+},
+{
+"id":"fileaction31",
+"title": "Manuaali.pdf",
+"description":"Manuaali.pdf",
+"startdate": "2012-07-05 12:05:00",
+"high_threshold":7,
+"importance":"50",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/pdf.png"
+},
+{
+"id":"fileaction32",
+"title": "Meidän_exceli.xslx",
+"description":"Meidän_exceli.xslx",
+"startdate": "2012-07-05 12:25:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/xlsx.png"
+},
+{
+"id":"fileaction33",
+"title": "Slides.ppt",
+"description":"Slides.ppt",
+"startdate": "2012-07-05 12:30:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/ppt.png"
+},
+{
+"id":"fileaction34",
+"title": "Screenshot.png",
+"description":"Screenshot.png",
+"startdate": "2012-07-05 12:55:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/png.png"
+},
+{
+"id":"session4",
+"title": "Session4",
+"description":"Sample session",
+"startdate": "2012-08-05 12:00:00",
+"enddate": "2012-08-05 13:00:00",
+"importance":"60",
+"date_display":"no",
+"click_callback":"timeglider.eventActions.navigateTo",
+"navigateTo":{"zoom_level":2,"focus_date":"2012-08-05 12:30:00"},
+"y_position":200,
+"icon":"triangle_yellow.png"
+},
+{
+"id":"fileaction41",
+"title": "Manuaali.pdf",
+"description":"Manuaali.pdf",
+"startdate": "2012-08-05 12:05:00",
+"high_threshold":7,
+"importance":"50",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/pdf.png"
+},
+{
+"id":"fileaction42",
+"title": "Meidän_exceli.xslx",
+"description":"Meidän_exceli.xslx",
+"startdate": "2012-08-05 12:25:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/xlsx.png"
+},
+{
+"id":"fileaction43",
+"title": "Slides.ppt",
+"description":"Slides.ppt",
+"startdate": "2012-08-05 12:30:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/ppt.png"
+},
+{
+"id":"fileaction44",
+"title": "Screenshot.png",
+"description":"Screenshot.png",
+"startdate": "2012-08-05 12:55:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"filetypes/png.png"
+},
+{
+"id":"fileaction44",
+"title": "fileaction",
+"description":"Sample fileaction",
+"startdate": "2012-08-05 12:55:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"circle_red.png"
+}
+
+
+]
+         
+}
+]

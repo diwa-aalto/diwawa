@@ -1,0 +1,59 @@
+[
+{
+"id":"session3",
+"title":"Session3",
+"focus_date":"2012-07-05 12:00:00",
+"initial_zoom":"3",
+"image_lane_height":100,
+"events":[
+
+{
+"id":"fileaction1",
+"title": "fileaction",
+"description":"Sample fileaction",
+"startdate": "2012-07-05 12:05:00",
+"high_threshold":7,
+"importance":"50",
+"date_display":"no",
+"y_position":200,
+"icon":"circle_green.png"
+},
+{
+"id":"fileaction2",
+"title": "fileaction",
+"description":"Sample fileaction",
+"startdate": "2012-07-05 12:25:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"circle_red.png"
+},
+{
+"id":"fileaction3",
+"title": "fileaction",
+"description":"Sample fileaction",
+"startdate": "2012-07-05 12:30:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"circle_green.png"
+},
+{
+"id":"fileaction4",
+"title": "fileaction",
+"description":"Sample fileaction",
+"startdate": "2012-07-05 12:55:00",
+"high_threshold":7,
+"importance":"60",
+"date_display":"no",
+"y_position":200,
+"icon":"circle_red.png"
+}
+
+
+]
+         
+}
+]

@@ -1,0 +1,520 @@
+<!DOCTYPE html>       
+<html lang="en">  
+<head>  
+    <meta charset="utf-8">  
+    <meta name="description" content="">
+    <title>Diwaamo</title>  
+    <link rel="stylesheet" href="/static/metro/css/modern.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/metro/css/modern-responsive.css" />
+	<!--<link rel="stylesheet" href="/static/css/960/960.css" />-->
+	<link rel="stylesheet" href="/static/css/jqueryFileTree.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/jchat.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/start/jquery-ui-1.9.2.custom.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/jquery.dropdown.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/jquery.fancybox.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/jquery.fancybox-buttons.css" type="text/css" />
+	<link rel="stylesheet" href="/static/css/jquery.fancybox-thumbs.css" type="text/css" />
+	<link rel="stylesheet" href="/static/timeglider/Timeglider.css" type="text/css" media="screen" title="no title" charset="utf-8">	
+	<link type="text/css" href="/static/css/jplayer.blue.monday.css" rel="stylesheet" />
+	<link rel="stylesheet" href="/static/css/metrosite.css" type="text/css" />
+	<script src="/static/js/jquery.js" type="text/javascript"></script>
+	<script src="/static/js/date.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.dataTables.min.js" type="text/javascript"></script>
+	<script src="/static/js/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.cookie.js" type="text/javascript"></script>
+	<script src="/static/js/jqueryFileTree.js" type="text/javascript"></script>
+	<script src="/static/js/jchat.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.fancybox.pack.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.fancybox-thumbs.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.fancybox-buttons.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.fancybox-media.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.equalHeights.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.cookie.js" type="text/javascript"></script>
+	<script src="/static/js/QTransform.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.jplayer.min.js" type="text/javascript"></script>
+	<script src="/static/metro/javascript/accordion.js" type="text/javascript"></script>
+	<script src="/static/metro/javascript/buttonset.js" type="text/javascript"></script>
+	<script src="/static/metro/javascript/carousel.js" type="text/javascript"></script>
+	<script src="/static/metro/javascript/tile-slider.js" type="text/javascript"></script>
+	<script src="/static/metro/javascript/dropdown.js" type="text/javascript"></script>
+	<script src="/static/metro/javascript/pagecontrol.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.emailSpamProtection.1.0.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.bxSlider.min.js" type="text/javascript"></script>
+	<script src="/static/js/jquery.filedownload.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/static/js/timeline.js"></script>
+	<script src="/static/js/jquery.dropdown.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/timeline.css">
+	<style>
+		.timeline-event-range{
+			min-width: 30px;
+		}
+	</style>
+    <script type="text/javascript">
+    	var mbproject = 0;
+        var timeline;
+        var data;
+
+        // Called when the Visualization API is loaded.
+        function drawVisualization() {
+            
+            // specify options
+            var options = {
+                'width':  '100%',
+                'height': '600px',
+                'editable': false,   // enable dragging and editing events
+                'style': 'box',
+				'axisOnTop':true
+            };
+
+            // Instantiate our timeline object.
+            timeline = new links.Timeline(document.getElementById('mytimeline'));
+
+            // Draw our timeline with the created data and options
+            timeline.draw(data, options);
+        }
+        function onselect(event) {
+  var sel = timeline.getSelection();
+  if (sel.length) {
+    if (sel[0].row != undefined) {
+      var row = sel[0].row;
+      var item = timeline.getItem(row);
+      $("div#snapshot").empty();
+      $("div#screenshots").empty();
+      $("#jquery_jplayer_1").jPlayer("clearMedia");
+      $("#canplay-icon").addClass("icon-blocked fg-color-red").removeClass("icon-music fg-color-blue");
+      console.log('Row selected #row'+row);
+      $('#row'+row).addClass("selected-row");
+      if(item.end != undefined){
+      timeline.setVisibleChartRange(item.start, item.end);
+      $('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(2).html()).trigger('keyup');
+      }else{
+      	$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(1).html()).trigger('keyup');
+      	$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > b").attr('id'),'project_id':$("ul#mbprojects li.selected").attr('id')},function(data){  		
+      		var audio = {};
+      		$.each(data,function(key,val){
+      			console.log(key+':'+val);
+      			if (val.indexOf("Snapshots") >= 0){
+      				$("div#snapshot").append('<a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="'+path_to_localhost(val)+'"/></a>');
+      			}else if(val.indexOf("Screenshots") >= 0){
+      				$("div#screenshots").append('<div><a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="'+path_to_localhost(val)+'"/></a></div>');
+      			}else if(val.indexOf("Audio") >= 0){
+      				audio[val.substring(val.lastIndexOf('.')+1)] = path_to_localhost(val);
+      			}
+      			});
+      			if (audio.hasOwnProperty('mp3') && audio.hasOwnProperty('ogg')){
+      			$("#jquery_jplayer_1").jPlayer("setMedia",audio);
+      			$("#canplay-icon").removeClass("icon-blocked fg-color-red").addClass("icon-music fg-color-blue");
+      			}
+      	});
+      }
+    }
+  }else{
+  	console.log("selected row removed");
+  	$(".selected-row").removeClass('selected-row');
+  	$('#event_search').val('').trigger('keyup');
+  	$("div#snapshot").empty();
+      $("div#screenshots").empty();
+      $("#jquery_jplayer_1").jPlayer("clearMedia");
+      $("#canplay-icon").addClass("icon-blocked fg-color-red").removeClass("icon-music fg-color-blue");
+  }
+}
+
+        function initTimeline(data){
+        	// specify options
+            var options = {
+                'width':  '100%',
+                'height': '600px',
+                'editable': false,   // enable dragging and editing events
+                'style': 'box',
+				'axisOnTop':true,
+				'intervalMax':2628000000,
+				'intervalMin':300000
+            };
+            
+         	// Instantiate our timeline object.
+            timeline = new links.Timeline(document.getElementById('mytimeline'));
+
+            // Draw our timeline with the created data and options
+            timeline.draw(data, options);	
+            links.events.addListener(timeline, 'select', onselect);
+        }
+    </script>
+	<script type="text/javascript">
+	function getFileExtension(filename){
+	return filename.split('.').pop();
+}
+function path_to_localhost(path){
+	if(path.indexOf("C:")>=0){
+		url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
+		console.log(url);
+		return url;
+	}
+	console.log(path+' no C:\ found');
+	return path;
+}
+function getFileName(filepath){
+	return filepath.replace(/^.*[\\\/]/, '');
+}
+function getDocHeight() {
+   	var db = document.body;
+	var dde = document.documentElement;
+ 
+	var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
+	return docHeight;
+}
+	$(document).ready(function(){ 
+	
+
+//  jPlayer settings
+$("#jquery_jplayer_1").jPlayer({
+		ready: function (event) {
+			/*$(this).jPlayer("setMedia", {
+				mp3: "http://localhost/7/Audio/84_123123.mp3",
+				ogg: "http://localhost/7/Audio/84_123123.ogg"
+			});*/
+		},
+		swfPath: "/static/js",
+		supplied: "mp3, ogg",
+		wmode: "window"
+	});
+
+
+	 
+  //$('#panel_handle').siblings().hide();
+/*$('#panel_handle').click(function(){
+	if($('#panel_handle i').hasClass('icon-arrow-down')){
+		$('#panel_handle').siblings().slideDown();
+		$('#panel_handle i').toggleClass('icon-arrow-down').toggleClass('icon-arrow-up');
+	}else{
+		$('#panel_handle').siblings().slideUp();
+		$('#panel_handle i').toggleClass('icon-arrow-down').toggleClass('icon-arrow-up');
+	}	
+	
+});*/
+
+
+
+
+$(document).on('click','#all_events tr',function(){
+	
+	var start = $(this).attr('start');
+	var end = ($(this).attr('end') != '' ? $(this).attr('end') : '');
+	if (end == ''){
+		start = Date.parse($(this).attr('start').substring(0,19)).add(-3).minute();
+		end = new Date(start.getTime()).add(6).minute().toString('yyyy-MM-ddTHH:mm:ss');
+		start = start.toString('yyyy-MM-ddTHH:mm:ss');
+	}
+	console.log('click'+start+':'+end+':'+$(this).attr('id').substring(3));
+	//timeline.setVisibleChartRange(start,end );
+	timeline.setSelection([{row: eval($(this).attr('id').substring(3))}]);
+	$("selected-row").removeClass("selected-row");
+	onselect();
+	$(this).addClass("selected-row");
+});
+// Write on keyup event of keyword input element
+	$("#event_search").keyup(function(){
+		$("#all_events").dataTable().fnFilter( $(this).val() );
+		if($(this).val() == ''){
+		$(".selected-row").removeClass('selected-row');
+		}
+		// When value of the input is not blank
+		/*if( $(this).val() != "")
+		{
+			// Show only matching TR, hide rest of them
+			$("#all_events tbody>tr").hide();
+			$("#all_events td:contains-ci('" + $(this).val() + "')").parent("tr").show();
+		}
+		else
+		{
+			// When there is no input or clean again, show everything back
+			$("#all_events tbody>tr").show();
+		}*/
+	});
+$('.fancybox').fancybox({
+    helpers : {
+    	title	: {
+				type: 'outside'
+			},
+			thumbs	: {
+				width	: 50,
+				height	: 50
+			},
+        overlay : {
+            css : {
+                'background' : 'rgba(58, 42, 45, 0.95)'
+            }
+        }
+    }
+});
+$('div#loading').hide();
+$("#event_search").next().click(function(){console.log('click X');$('#event_search').val('').trigger('keyup');});
+function eventobject(type, start, end, title, content){
+	this.type = type;
+	this.start = start;
+	this.end = end;
+	this.title = title;
+	this.content = content;
+	
+}
+
+$('#mbprojects li').click(
+	function(){
+		if(!$(this).hasClass('selected')){
+			$('#event_search').val('').trigger('keyup');
+  			$("div#snapshot").empty();
+      		$("div#screenshots").empty();
+      		$("#jquery_jplayer_1").jPlayer("clearMedia");
+      		$("#canplay-icon").addClass("icon-blocked fg-color-red").removeClass("icon-music fg-color-blue");
+			$('#mbprojects .selected').toggleClass('selected');
+			$(this).toggleClass('selected');
+			mbproject = $(this).attr('id');
+			console.log('selected id ='+mbproject);
+			$('#panel_handle').click();
+			$('#mytimeline').empty();
+			$('div#loading').show();
+			/*$.getJSON('/timeline/'+mbproject+'/',function(data){
+				var timelinedata = [];
+				$.each(data,function(){
+
+					var icon = 'icon-';
+					var content = '';
+					switch(this.type)
+					{
+						case 'event':
+  								 icon+='tag';
+  								 content = '<i class="'+icon+'"></i>'+'<b id="' + this.id + '">'+this.title+'</b>';
+ 								 break;
+						case 'fileaction':
+	  								icon+='file';
+	  								content = '<img src="/static/img/filetypes/'+this.ext.substring(1)+'.png"/>'+'<b id="' + this.id + '">'+this.path+'</b>';
+ 								 	break;
+						case 'session':
+	  								icon+='clock';
+	  								content = '<i class="'+icon+'"></i>';
+  
+					}
+					timelinedata.push({'start':Date.parse(this.start),'end':(this.end!=undefined) ? Date.parse(this.end) : null,'content':content});
+				});
+				initTimeline(timelinedata);
+			});*/
+			$.getJSON('/projects/'+mbproject+'/',function(data){
+
+				jsondata = data;
+				var events = new Array();
+				var pr_time, pr_file;
+				$.each(data,function(k,v){
+					var start, end, name;				
+					switch(k){
+						case 'sessions':
+										$.each(v,function(){
+												pr_time = null;
+												pr_file = '';
+												events.push(new eventobject('Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
+												});
+												break;
+						case 'fileactions':
+										$.each(v,function(){
+													var action_time = Date.parse(this.action_time);
+													console.log(pr_time +':'+pr_file);
+													if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
+														console.log("same file and time");
+														events[events.length-1].content = events[events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
+													}else{
+													events.push(new eventobject(this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
+													pr_time = action_time.clone();
+													pr_file = this.file__path;
+													}
+												});
+												break;
+						case 'events':
+										$.each(v,function(){
+													pr_time = null;
+													pr_file = '';
+													events.push(new eventobject('Event',Date.parse(this.time),null,this.title,'<i class="icon-tag"></i>'+'<b id="' + this.id + '">'+this.title+'</b>'));
+												});
+												break;						
+						default:
+									break;	
+					}
+					if (start == undefined)
+						return true;
+					//$('table#all_events tbody').append('<tr start="'+start+'" end="'+end+'"><td>'+name+'</td><td>'+start+'</td><td>'+end+'</li>');
+					
+				});
+				events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
+				initTimeline(events);
+				$('table#all_events tbody').empty();
+				$.each(events,function(k,v){ $('table#all_events tbody').append('<tr id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td></tr>');});
+				$('#all_events').dataTable( {
+        "sScrollY": "400px",
+        "bPaginate": false,
+        "bScrollCollapse": true,
+        "bSort": false,
+        "bInfo": false,
+        "bDestroy": true,
+        "sDom": 'lrtp'
+    } );	
+    $('div#loading').hide();
+			});
+		
+		}
+	});
+});
+function event_content(type,event){
+	console.log('event content');
+	var output = "";
+	switch(type){
+		case 'fileaction':
+		var action_time = Date.parse(event.action_time);
+		output = '<p><img src="/static/img/filetypes/'+getFileExtension(event.file__path)+'.png" style="float:left;"/>'+'<b id="' + event.file__id + '">'+getFileName(event.file__path)+'</b><br />'+action_time.toString("HH:mm")+fileaction_icon(event.action__name)+'</p>';
+		break;
+	}
+	return output;
+}
+function fileaction_icon(type){
+	console.log('icon-type');
+	var icon = '';
+	switch(type){
+		case 'Created':
+			icon='<i class="icon-new"></i>';
+			break;
+		case 'Updated':
+			icon='<i class="icon-file"></i>';
+			break;	
+		case 'Removed':
+			icon='<i class="icon-remove"></i>';
+			break;
+		case 'Opened':
+			icon='<i class="icon-book"></i>';
+			break;	
+		default:
+		icon = type;	
+	}
+	return icon;
+}
+// jQuery expression for case-insensitive filter
+$.extend($.expr[":"], 
+{
+    "contains-ci": function(elem, i, match, array) 
+	{
+		return (elem.textContent || elem.innerText || $(elem).text() || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+	}
+});
+	
+	</script>	
+</head>  
+<body>
+	<section class="frame" id="diwamb">
+		<div class="page">
+			<div class="page-region">
+				<div class="page-region-content">
+					<div class="grid"><div class="row">
+					<div id="slide_panel" class="bg-color-pinkDark" style="border-radius: 10px; padding-top:15px; margin-bottom: 10px;">
+					<ul id="mbprojects" class="listview iconic fluid">
+						{% for project in projects %}
+						<li class="bg-color-blueDark fg-color-white" id="{{project.id}}"><i class="icon-briefcase" style="margin-right: 5px; font-size:15px;"></i>{{project.name}}</li>
+						{% endfor %}
+					</ul>
+					<!--<div id="panel_handle" style="text-align:center;cursor:pointer;"><i class="icon-arrow-down"></i></div>-->
+					<div id="slider"></div>
+					<script type="text/javascript">
+/* slider */
+$(window).ready(function () {
+$('div#slide_panel').each(function () {
+
+    var ul = $('ul', this);
+    var productWidth = ul.innerWidth() - $(this).outerWidth();
+    console.log(ul.innerWidth()+':'+$(this).outerWidth()+'='+productWidth);
+    var slider = $('#slider', this).slider({ 
+      handle: '.handle',
+      minValue: 0, 
+      maxValue: productWidth, 
+      slide: function (ev, ui) {
+        ul.css('left', '-' + ui.value + 'px');
+      }, 
+      stop: function (ev, ui) {
+        ul.animate({ 'left' : '-' + ui.value + 'px' }, 500, 'linear');
+      }
+    });
+    $('#slider').slider("option","max",productWidth);
+    console.log($('#slider').slider("option","max"));
+    
+  });
+}); 
+</script>
+					</div>
+					</div>
+					<div class="grid"><div class="row">
+					<div style="width:50%;float:left;min-height:600px;">
+					<div id="loading"><img src="/static/img/loader.gif"/></div>	
+					<div id="mytimeline" style=""></div>
+					</div>	
+					<div style="width:50%;float:left;">
+							<div style="float:left;">
+							<div id="mb-images" class="image-collection">
+    								<div id="snapshot"></div>
+    								<div id="screenshots">
+    								
+    								</div><span style="clear:both;"></span></div></div>
+						<div style="float:right;text-align:center;padding-top:20px;">
+							<i id="canplay-icon" class="icon-blocked fg-color-red" style="font-size:70px;"></i><br />
+						<!--<div id="sound_slider" class="slider" data-role="slider" style="margin: 5px auto;"></div>
+						<div class="toolbar">	
+		<button id="play" class=""><img src="/static/img/media_control/Play.png"/></button>
+		<button id="pause" class=""><img src="/static/img/media_control/Pause.png"/></button>
+		<button id="stop" class=""><img src="/static/img/media_control/Stop.png"/></button>
+							</div>-->
+							<div id="jquery_jplayer_1" class="jp-jplayer"></div>
+  <div id="jp_container_1" class="jp-audio">
+    <div class="jp-type-single">
+      <div class="jp-gui jp-interface">
+          <div class="player-icon" style="left:0;top:0;"><a href="javascript:;" class="jp-play" tabindex="1">play</a><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></div>
+        <div class="jp-progress">
+          <div class="jp-seek-bar">
+            <div class="jp-play-bar"></div>
+          </div>
+        </div>
+        <div class="player-icon" style="left:208px;top:12px;"><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></div>
+        <div class="jp-volume-bar">
+          <div class="jp-volume-bar-value"></div>
+        </div>
+        <div class="player-icon" style="left:275px;top:12px;"><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></div>
+
+      </div>
+      
+      <div class="jp-no-solution">
+        <span>Update Required</span>
+        To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+      </div>
+    </div>
+  </div>
+							</div>
+							<div style="clear:both;"></div>
+							<form>
+								     <fieldset>
+    								<legend>Search</legend>
+    								<div class="input-control text" style="width:100%;float:left;margin-right:5px;">
+    								<input id="event_search" type="text" />
+    								<span class="helper"></span>
+    								</div>
+    								</fieldset>
+							</form>
+							<table id="all_events" class="striped bordered hovered">
+								<thead>
+								<tr><th>Event</th><th>Title</th><th>Start</th><th>End</th></tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						
+						
+							     
+						
+					</div>
+					</div></div></div></div></div>
+					
+	</section>
+	      
+</body>  
+</html> 
