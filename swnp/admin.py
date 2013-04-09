@@ -29,7 +29,7 @@ admin.site.register(File)
 admin.site.register(Activity)
 admin.site.register(Fileaction)
 admin.site.register(Computer)
-
+admin.site.register(Company)
 class ExtendedFlatPageForm(FlatpageForm):
     class Meta:
         model = ExtendedFlatPage

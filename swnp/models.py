@@ -69,7 +69,7 @@ class Computer(models.Model):
     #id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=150)
     ip = models.PositiveIntegerField(null=True, blank=True)
-    mac = models.CharField(max_length=36, blank=True)
+    mac = models.CharField(max_length=36, null=True, blank=True)
     time = models.DateTimeField(null=True, blank=True)
     screens = models.IntegerField(null=True, blank=True)
     responsive = models.NullBooleanField(null=True, blank=True)

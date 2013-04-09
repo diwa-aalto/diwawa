@@ -13,10 +13,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         #'NAME': 'C:\\Users\\neriksso\\My Documents\\Aptana Studio 3 Workspace\\Chimaira\\sqlite.db',
-        'NAME': 'WZP',                        # Or path to database file if using sqlite3.
+        'NAME': 'haamu',                        # Or path to database file if using sqlite3.
         'USER': 'wazzuup',                      # Not used with sqlite3.
         'PASSWORD': 'serval',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': '192.168.1.10',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -33,7 +33,7 @@ LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 #SITE_ROOT = "/share/HDA_DATA/homes/django/Chimaira"
-SITE_ROOT = "C:/Users/neriksso/Documents/Chimaira"
+SITE_ROOT = "C:/Users/neriksso/Documents/Aptana Studio 3 Workspace/Chimaira"
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -66,7 +66,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    "/share/HDA_DATA/homes/django/Chimaira/static/",                  
+    SITE_ROOT+"/static/",                  
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -110,7 +110,7 @@ ROOT_URLCONF = 'Chimaira.urls'
 WSGI_APPLICATION = 'Chimaira.wsgi.application'
 
 TEMPLATE_DIRS = (
-    "/share/HDA_DATA/homes/django/Chimaira/Chimaira/templates",             
+    SITE_ROOT+"/Chimaira/templates",             
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

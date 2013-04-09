@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'ExtendedFlatPage'
         db.create_table('swnp_extendedflatpage', (
             ('flatpage_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['flatpages.FlatPage'], unique=True, primary_key=True)),
-            ('show_after', self.gf('django.db.models.fields.related.ForeignKey')(default=None, related_name='flatpage_predecessor', null=True, blank=True, to=orm['swnp.ExtendedFlatPage'])),
+            #('show_after', self.gf('django.db.models.fields.related.ForeignKey')(default=None, related_name='flatpage_predecessor', null=True, blank=True, to=orm['swnp.ExtendedFlatPage'])),
             ('alt_text', self.gf('django.db.models.fields.CharField')(max_length=30, null=True, blank=True)),
         ))
         db.send_create_signal('swnp', ['ExtendedFlatPage'])

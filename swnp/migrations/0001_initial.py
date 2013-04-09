@@ -10,14 +10,14 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding model 'Company'
         db.create_table(u'company', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=150)),
         ))
         db.send_create_signal('swnp', ['Company'])
 
         # Adding model 'User'
         db.create_table(u'user', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=150)),
             ('email', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=150, blank=True)),
@@ -28,7 +28,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'Project'
         db.create_table(u'project', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=150, blank=True)),
             ('company', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Company'])),
             ('dir', self.gf('django.db.models.fields.CharField')(max_length=765, blank=True)),
@@ -38,7 +38,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'Session'
         db.create_table(u'session', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=150, blank=True)),
             ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Project'])),
             ('starttime', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
@@ -49,17 +49,17 @@ class Migration(SchemaMigration):
 
         # Adding model 'Action'
         db.create_table(u'action', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=150, blank=True)),
         ))
         db.send_create_signal('swnp', ['Action'])
 
         # Adding model 'Computer'
         db.create_table(u'computer', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=150)),
             ('ip', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('mac', self.gf('django.db.models.fields.CharField')(max_length=36, blank=True)),
+            ('mac', self.gf('django.db.models.fields.CharField')(max_length=36, null=True, blank=True)),
             ('time', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('screens', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.User'], null=True, blank=True)),
@@ -69,7 +69,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'Event'
         db.create_table(u'event', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('desc', self.gf('django.db.models.fields.CharField')(max_length=1500, null=True, blank=True)),
             ('time', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('session', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Session'], null=True, blank=True)),
@@ -79,7 +79,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'File'
         db.create_table(u'file', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('path', self.gf('django.db.models.fields.CharField')(max_length=765)),
             ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Project'], null=True, blank=True)),
         ))
@@ -87,7 +87,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'Fileaction'
         db.create_table(u'fileaction', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('file', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.File'])),
             ('action', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Action'])),
             ('action_time', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
