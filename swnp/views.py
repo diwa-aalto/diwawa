@@ -318,7 +318,7 @@ import os
 import urllib
 
 def dirlist(request):
-    p = "/share/Projects/"
+    p = u"/share/Projects/"
     r=['<ul class="jqueryFileTree" style="display: none;">']
     try:
         r=['<ul class="jqueryFileTree" style="display: none;">']
@@ -328,7 +328,7 @@ def dirlist(request):
         print da
         while da.startswith("\\") or da.startswith("/"):
             da = da[1:]
-        d = os.path.join(p,d[d.find('Projects')+9:]).replace('\\','/')
+        d = unicode(os.path.join(p,d[d.find('Projects')+9:]).replace('\\','/'))
         print d
         for f in os.listdir(d):
             ff=os.path.join(d,f)
