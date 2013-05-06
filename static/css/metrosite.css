@@ -366,6 +366,7 @@ background: url("/static/img/banner_top.png") no-repeat top right transparent;
 div.icons{
 height: 32px;
 padding-left: 40px;
+background: url("/static/img/custom3.png") no-repeat top left transparent;
 }
 div.decision{
 background: url("/static/img/decision.png") no-repeat top left transparent;

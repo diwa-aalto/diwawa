@@ -182,7 +182,7 @@ class Migration(SchemaMigration):
         },
         'swnp.action': {
             'Meta': {'object_name': 'Action', 'db_table': "u'action'"},
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'})
         },
         'swnp.activity': {
@@ -194,12 +194,12 @@ class Migration(SchemaMigration):
         },
         'swnp.company': {
             'Meta': {'object_name': 'Company', 'db_table': "u'company'"},
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '150'})
         },
         'swnp.computer': {
             'Meta': {'object_name': 'Computer', 'db_table': "u'computer'"},
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'mac': ('django.db.models.fields.CharField', [], {'max_length': '36', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
@@ -211,14 +211,14 @@ class Migration(SchemaMigration):
         'swnp.event': {
             'Meta': {'object_name': 'Event', 'db_table': "u'event'"},
             'desc': ('django.db.models.fields.CharField', [], {'max_length': '1500', 'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Session']", 'null': 'True', 'blank': 'True'}),
             'time': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '120', 'null': 'True', 'blank': 'True'})
         },
         'swnp.file': {
             'Meta': {'object_name': 'File', 'db_table': "u'file'"},
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'path': ('django.db.models.fields.CharField', [], {'max_length': '765'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Project']", 'null': 'True', 'blank': 'True'})
         },
@@ -228,7 +228,7 @@ class Migration(SchemaMigration):
             'action_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'computer': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Computer']", 'null': 'True', 'blank': 'True'}),
             'file': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.File']"}),
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Session']", 'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.User']", 'null': 'True', 'blank': 'True'})
         },
@@ -236,7 +236,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Project', 'db_table': "u'project'"},
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Company']"}),
             'dir': ('django.db.models.fields.CharField', [], {'max_length': '765', 'blank': 'True'}),
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '120', 'blank': 'True'})
         },
@@ -249,7 +249,7 @@ class Migration(SchemaMigration):
         'swnp.session': {
             'Meta': {'object_name': 'Session', 'db_table': "u'session'"},
             'endtime': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
             'previous_session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Session']", 'null': 'True', 'blank': 'True'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Project']"}),
@@ -272,7 +272,7 @@ class Migration(SchemaMigration):
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Company']", 'null': 'True', 'blank': 'True'}),
             'department': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
             'email': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
-            'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'})
         },
