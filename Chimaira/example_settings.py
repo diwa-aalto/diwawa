@@ -12,11 +12,10 @@ FILE_UPLOAD_TEMP_DIR = "/share/HDB_DATA/uploads"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        #'NAME': 'C:\\Users\\neriksso\\My Documents\\Aptana Studio 3 Workspace\\Chimaira\\sqlite.db',
-        'NAME': 'haamu',                        # Or path to database file if using sqlite3.
-        'USER': 'wazzuup',                      # Not used with sqlite3.
-        'PASSWORD': 'serval',                  # Not used with sqlite3.
-        'HOST': '130.233.50.86',                      # Set to empty string for localhost. Not used with sqlite3.
+        'NAME': '',                        # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -32,8 +31,7 @@ TIME_ZONE = 'Europe/Helsinki'
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
-#SITE_ROOT = "/share/HDA_DATA/homes/django/Chimaira"
-SITE_ROOT = "C:/Users/neriksso/Documents/Aptana Studio 3 Workspace/Chimaira"
+SITE_ROOT = "/share/HDA_DATA/homes/django/Chimaira"
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
