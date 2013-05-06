@@ -25,14 +25,14 @@ function onselect(event) {
       			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(2).html()).trigger('keyup');
       		}else{
       			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(1).html()).trigger('keyup');
-      			$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > b").attr('id'),'project_id':$("select#mbprojects option:selected").attr('id')},function(data){  		
+      			$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > div > b").attr('id')},function(data){  		
       			var audio = {};
       			$.each(data,function(key,val){
       				console.log(key+':'+val);
       				if (val.indexOf("Snapshots") >= 0){
-      					$("div#snapshot").append('<a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="'+path_to_localhost(val)+'"/></a>');
+      					$("div#snapshot").append('<a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title=""><img src="'+path_to_localhost(val)+'"/></a>');
       				}else if(val.indexOf("Screenshots") >= 0){
-      					$("div#screenshots").append('<div><a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title="Lorem ipsum dolor sit amet"><img src="'+path_to_localhost(val)+'"/></a></div>');
+      					$("div#screenshots").append('<div><a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title=""><img src="'+path_to_localhost(val)+'"/></a></div>');
       				}else if(val.indexOf("Audio") >= 0){
       					audio[val.substring(val.lastIndexOf('.')+1)] = val;
       				}
