@@ -135,6 +135,7 @@ $(document).ready(function(){
 				<ul class="menu">
 					<li{% if tab == 'diwaweb'%} class="active"{% endif %}><a href="/" title="DiWa Web Application">Web Application</a></li>
 					<li {% if tab == 'diwamb'%} class="active"{% endif %}><a href="/mb/" title="DiWa Meeting Browser">Meeting Browser</a></li>
+					<li {% if tab == 'stats'%} class="active"{% endif %}><a href="/stats/" title="DiWa Statistics">Stats</a></li>
 					{% show_ordered_flatpages_menu flatpage.id %}
 
 				</ul>        
@@ -144,7 +145,7 @@ $(document).ready(function(){
 
 	<div class="frames">
 	{% block flatpage_content %}{% endblock %}
-	<section class="frame{% if tab == 'diwaweb' or tab == 'diwamb'%} active{% endif %}" id="diwaweb">       
+	<section class="frame{% if tab == 'diwaweb' or tab == 'diwamb' or tab == 'stats'%} active{% endif %}" id="diwaweb">       
 		<div class="page">
 			<div class="page-region">
 				<div class="page-region-content">

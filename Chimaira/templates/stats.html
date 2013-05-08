@@ -1,0 +1,33 @@
+{% extends "metrobase.html" %}
+{% block javascript %}
+$(document).ready(function(){});
+{% endblock %}
+
+{% block pagetitle %}DiWa Web Application{% endblock %}
+
+{% block content %}
+
+<div class="grid">
+<div class="row">
+
+<table>
+	<thead>
+		<th>Project</th>
+		<th>Session Count</th>
+		<th>Average Session Duration (s)</th>
+		<th>Min Session Duration (s)</th>
+		<th>Max Session Duration (s)</th>
+		<th>File Count</th>
+		<th>FileAction Count</th>
+		<th>Event Count</th>
+	</thead>
+	<tbody>
+		{%  for p in stats %}
+			<tr><td>{{p.name}}</td><td>{{p.session_count}}</td><td>{{p.session_average_duration}}</td><td>{{p.session_min_duration}}</td><td>{{p.session_max_duration}}</td><td>{{p.file_count}}</td><td>{{p.fileaction_count}}</td><td>{{p.event_count}}</td></tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+</div>
+
+{% endblock %}

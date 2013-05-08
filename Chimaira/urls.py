@@ -28,6 +28,7 @@ urlpatterns = patterns('swnp.views',
     url(r'^awake/$', 'awake', name='awake'),
     url(r'^shutdown/$', 'shutdown', name='shutdown'),
     url(r'^openurl/(?P<id>\d{1,3})/$', 'openurl', name='openurl'),
+    url(r'^stats/$', 'stats', name='stats'),
     
     # url(r'^Chimaira/', include('Chimaira.foo.urls')),
 
