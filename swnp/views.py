@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
 from models import *
-from django.db.models import Count
+from django.db.models import Count, F
 import utils
 import os
 from datetime import datetime, timedelta
@@ -15,6 +15,9 @@ from decorators import custom_login
 from operator import itemgetter
 from collections import Counter
 from django.db.models import Q
+from django.forms import ModelForm
+from django.contrib import messages
+import copy
 IP_ADDR = "192.168.1.10"
 UNSETTED = False
 def get_activity():
@@ -98,9 +101,9 @@ def project_json(request,id):
         return HttpResponse('{}')            
 
 def event_files(request):
-    if 'event_id' in request.GET and 'project_id' in request.GET:
+    if 'event_id' in request.GET:
         event_id = request.GET['event_id']
-        project_id = request.GET['project_id']
+        project_id = Event.objects.get(pk=event_id).session.project.id
         print project_id,event_id,"event_files"
         return HttpResponse(utils.get_event_files(event_id, Project.objects.get(pk=project_id).dir), mimetype='application/json')
     return HttpResponse('{}', mimetype='application/json')
@@ -365,4 +368,32 @@ def screenshot(request):
             response = 'OK'
         except Exception,e:
             print str(e)
-    return HttpResponse(response)           
+    return HttpResponse(response) 
+
+class EventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title','desc']         
+@csrf_protect
+def edit_event(request,event_id):
+    event = Event.objects.get(pk=event_id)
+    form = EventForm(instance=event)
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event details saved.')    
+    return render_to_response("edit_event.html",{'event':event, 'form':form},context_instance=RequestContext(request))
+
+def stats(request):
+    stats = []
+    projects = Project.objects.all()
+    for p in projects:
+        sessions = Session.objects.filter(project=p, endtime__gt=F('starttime')+timedelta(minutes=3))
+        files = File.objects.filter(project=p)
+        fileactions = Fileaction.objects.filter(file__in=files)
+        events = Event.objects.filter(session__in=sessions)
+        sessions = sessions.extra(select={'dur':"SUM(TIMESTAMPDIFF(SECOND,starttime,endtime))/count(*)",'min':"MIN(TIMESTAMPDIFF(SECOND,starttime,endtime))",'max':"MAX(TIMESTAMPDIFF(SECOND,starttime,endtime))", 'count':"COUNT(*)"}).values_list('dur','min','max', 'count').get()      
+        stats.append({'name':p.name, 'session_average_duration':int(sessions[0]) if sessions[0] is not None else 0,'session_min_duration':int(sessions[1]) if sessions[1] is not None else 0,'session_max_duration':int(sessions[2]) if sessions[2] is not None else 0,'session_count':sessions[3],'file_count':files.count(), 'fileaction_count':fileactions.count(), 'event_count':events.count()})
+
+    return render_to_response("stats.html",{'stats':stats,'tab':'stats'},context_instance=RequestContext(request))

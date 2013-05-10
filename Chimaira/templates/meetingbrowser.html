@@ -119,7 +119,16 @@ $(document).ready(function(){
 		},
 		wmode: "window"
 		});
-	 	
+		$("#edit_event_link").hide();
+		$("#edit_event_link").fancybox({
+			'scrolling'		: 'no',
+    helpers : {
+    title	: {type: 'outside'},
+    overlay : {
+    	css : {'background' : 'rgba(58, 42, 45, 0.95)'}
+        }
+    }
+});
 $(document).on('click','.play',function(event){
 	var parent = $(this).closest('tr');
 	if (jplayer_active != parent.attr('event')){
@@ -254,7 +263,7 @@ $('#mbprojects').change(
 										$.each(v,function(){
 													pr_time = null;
 													pr_file = '';
-													events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,'<div class="icons '+this.title.toLowerCase().replace(' ','_')+'"><b id="' + this.id + '">'+this.title+'</b></div>'));
+													events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,event_content('event',this)));
 												});
 												break;						
 						default:
@@ -367,6 +376,9 @@ function event_content(type,event){
 		var action_time = Date.parse(event.action_time);
 		output = '<p><img src="/static/img/filetypes/'+getFileExtension(event.file__path)+'.png" style="float:left;"/>'+'<a target="_NEW" href="'+parse_projects_link(event.file__path)+'"><b id="' + event.file__id + '">'+getFileName(event.file__path)+'</a></b><br />'+action_time.toString("HH:mm")+fileaction_icon(event.action__name)+'</p>';
 		break;
+		case 'event':
+		output = '<div class="icons '+event.title.toLowerCase().replace(' ','_')+'"><a href="#" onclick="edit_event_click('+ event.id +')"><b id="' + event.id + '">'+event.title+'</b></a></div>';
+		break;
 	}
 	return output;
 }
@@ -399,6 +411,11 @@ $.extend($.expr[":"],
 		return (elem.textContent || elem.innerText || $(elem).text() || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
 	}
 });
+function edit_event_click(event_id){
+	$("a#edit_event_link").attr("href", "/event/"+event_id+"/edit/")
+	$('#edit_event_link').trigger('click');
+	return false;
+}
 function parse_projects_link(link){
 	var baseurl = "/static/Projects/";
 	baseurl += link.substr(link.indexOf("Projects")+9)
@@ -445,4 +462,6 @@ function parse_projects_link(link){
 		</div>
 	</div>
 </div>
+<a id="edit_event_link" href="" data-fancybox-type="iframe"></a>
+
 {% endblock %}

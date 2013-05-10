@@ -1,0 +1,38 @@
+<!DOCTYPE html>       
+<html lang="en">  
+<head>  
+    <meta charset="utf-8">  
+    <meta name="description" content="">
+    <title>Diwaamo</title>  
+    <link rel="stylesheet" href="/static/metro/css/modern.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/metro/css/modern-responsive.css" />
+</head>  
+<body>
+<div id="edit_event" class="fancybox">
+<form method="POST" action="{{request.get_full_path}}">
+	{% csrf_token %}
+	{% if f.errors %}
+	<div class="border-color-red fg-color-red"><strong>{{ form.title.errors }}</strong></div>
+	<div class="border-color-red fg-color-red"><strong>{{ form.desc.errors }}</strong></div>
+	{% endif %}
+	{% if messages %}
+    {% for message in messages %}
+    <div class="border-color-green fg-color-green"><strong>{{ message }}</strong></div>
+    {% endfor %}
+	{% endif %}
+	 <div class="input-control text">
+	 <strong>Title</strong>
+	 {{ form.title }}
+    <span class="helper" style="top:22px;"></span>
+    </div>
+    <div class="input-control text">
+    <strong>Description</strong>
+    {{ form.desc }}
+    <span class="helper" style="top:22px;"></span>
+    </div>
+     <input type="submit" value="Submit"/>
+</form>	
+</div>
+</body>
+</html>

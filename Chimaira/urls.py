@@ -29,6 +29,7 @@ urlpatterns = patterns('swnp.views',
     url(r'^shutdown/$', 'shutdown', name='shutdown'),
     url(r'^openurl/(?P<id>\d{1,3})/$', 'openurl', name='openurl'),
     url(r'^stats/$', 'stats', name='stats'),
+    url(r'^event/(?P<event_id>\d+)/edit/$', 'edit_event', name='edit_event'),
     
     # url(r'^Chimaira/', include('Chimaira.foo.urls')),
 
