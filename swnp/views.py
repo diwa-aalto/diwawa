@@ -15,7 +15,7 @@ from decorators import custom_login
 from operator import itemgetter
 from collections import Counter
 from django.db.models import Q
-from django.forms import ModelForm
+from django import forms
 from django.contrib import messages
 import copy
 IP_ADDR = "192.168.1.10"
@@ -370,18 +370,21 @@ def screenshot(request):
             print str(e)
     return HttpResponse(response) 
 
-class EventForm(ModelForm):
+class EventForm(forms.ModelForm):
+    desc = forms.CharField(widget=forms.Textarea)
     class Meta:
         model = Event
-        fields = ['title','desc']         
+        fields = ['title']         
 @csrf_protect
 def edit_event(request,event_id):
     event = Event.objects.get(pk=event_id)
-    form = EventForm(instance=event)
+    form = EventForm(instance=event,initial={'desc':event.desc})
     if request.method == 'POST':
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
             form.save()
+            event.desc = form.cleaned_data['desc']
+            event.save()
             messages.success(request, 'Event details saved.')    
     return render_to_response("edit_event.html",{'event':event, 'form':form},context_instance=RequestContext(request))
 
