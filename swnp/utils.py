@@ -9,7 +9,7 @@ import json
 import socket
 import time
 import iptools
-import wol
+from awake import wol
 import base64
 import urllib2
 import datetime
