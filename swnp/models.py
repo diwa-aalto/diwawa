@@ -43,7 +43,7 @@ class Project(models.Model):
     
 class Session(models.Model):
     #id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=150, blank=True)
+    name = models.CharField(max_length=150, null=True, blank=True)
     project = models.ForeignKey(Project)
     starttime = models.DateTimeField(null=True, blank=True)
     endtime = models.DateTimeField(null=True, blank=True)

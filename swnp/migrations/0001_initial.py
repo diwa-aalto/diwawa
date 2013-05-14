@@ -39,7 +39,7 @@ class Migration(SchemaMigration):
         # Adding model 'Session'
         db.create_table(u'session', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=150, blank=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=150, null=True, blank=True)),
             ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Project'])),
             ('starttime', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('endtime', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
@@ -250,7 +250,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Session', 'db_table': "u'session'"},
             'endtime': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '150', 'null': 'True', 'blank': 'True'}),
             'previous_session': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Session']", 'null': 'True', 'blank': 'True'}),
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Project']"}),
             'starttime': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'})
