@@ -32,10 +32,10 @@ class User(models.Model):
         
 class Project(models.Model):
     #id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=150, blank=True)
+    name = models.CharField(max_length=150)
     company = models.ForeignKey(Company)
-    dir = models.CharField(max_length=765, blank=True)
-    password = models.CharField(max_length=120, blank=True)
+    dir = models.CharField(max_length=765, null=True, blank=True)
+    password = models.CharField(max_length=120, null=True, blank=True)
     class Meta:
         db_table = u'project'
     def __unicode__(self):

@@ -29,10 +29,10 @@ class Migration(SchemaMigration):
         # Adding model 'Project'
         db.create_table(u'project', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=150, blank=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=150)),
             ('company', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['swnp.Company'])),
-            ('dir', self.gf('django.db.models.fields.CharField')(max_length=765, blank=True)),
-            ('password', self.gf('django.db.models.fields.CharField')(max_length=120, blank=True)),
+            ('dir', self.gf('django.db.models.fields.CharField')(max_length=765, null=True, blank=True)),
+            ('password', self.gf('django.db.models.fields.CharField')(max_length=120, null=True, blank=True)),
         ))
         db.send_create_signal('swnp', ['Project'])
 
@@ -235,10 +235,10 @@ class Migration(SchemaMigration):
         'swnp.project': {
             'Meta': {'object_name': 'Project', 'db_table': "u'project'"},
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['swnp.Company']"}),
-            'dir': ('django.db.models.fields.CharField', [], {'max_length': '765', 'blank': 'True'}),
+            'dir': ('django.db.models.fields.CharField', [], {'max_length': '765', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '120', 'blank': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '150'}),
+            'password': ('django.db.models.fields.CharField', [], {'max_length': '120', 'null': 'True', 'blank': 'True'})
         },
         'swnp.projectmembers': {
             'Meta': {'object_name': 'Projectmembers', 'db_table': "u'projectmembers'"},
