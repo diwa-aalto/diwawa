@@ -1,4 +1,4 @@
-# Django settings for Chimaira project.
+# Django settings for DiWaWA project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -8,7 +8,14 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-FILE_UPLOAD_TEMP_DIR = "/share/HDB_DATA/uploads"
+
+# Enter MAC addresses of the stationary machines for Wake On LAN functionality
+# For example MACS = ['00000000000A','00000000000B','00000000000C']
+MACS = []
+
+# Path to your projects base directory
+PROJECTS_PATH = ""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -31,7 +38,21 @@ TIME_ZONE = 'Europe/Helsinki'
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
-SITE_ROOT = "/share/HDA_DATA/homes/django/Chimaira"
+
+# Set to the project root directory
+SITE_ROOT = ""
+
+# Set to the IP address of the server. Used to converted local paths to network paths.
+IP_ADDR = None
+
+# For details, see https://docs.djangoproject.com/en/dev/ref/settings/#force-script-name
+FORCE_SCRIPT_NAME = ''
+
+# The directory to store data temporarily while uploading files. 
+# If None, Django will use the standard temporary directory for the operating system. 
+# For example, this will default to ‘/tmp’ on *nix-style operating systems.
+FILE_UPLOAD_TEMP_DIR = None
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -142,7 +163,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
-FORCE_SCRIPT_NAME = ''
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.

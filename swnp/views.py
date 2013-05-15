@@ -17,12 +17,13 @@ from collections import Counter
 from django.db.models import Q
 from django import forms
 from django.contrib import messages
-import copy
-IP_ADDR = "192.168.1.10"
+from django.conf import settings
+IP_ADDR = getattr(settings, "IP_ADDR", "192.168.1.10")
+PROJECTS_PATH = getattr(settings, "PROJECTS_PATH", "/")
 UNSETTED = False
 def get_activity():
     try:
-        activity = Activity.objects.filter(active=True).latest('id')
+        activity = Activity.objects.filter(active=1).latest('id')
     except Activity.DoesNotExist:
         activity = None
     return activity 
@@ -321,7 +322,6 @@ import os
 import urllib
 
 def dirlist(request):
-    p = u"/share/Projects/"
     r=['<ul class="jqueryFileTree" style="display: none;">']
     try:
         r=['<ul class="jqueryFileTree" style="display: none;">']
@@ -331,10 +331,10 @@ def dirlist(request):
         print da
         while da.startswith("\\") or da.startswith("/"):
             da = da[1:]
-        d = unicode(os.path.join(p,d[d.find('Projects')+9:]).replace('\\','/'))
+        d = unicode(os.path.join(PROJECTS_PATH,d[d.find('Projects')+9:]).replace('\\','/'))
         print d
         for f in os.listdir(d):
-            ff=os.path.join(d,f)
+            ff=os.path.join(d,f).replace('\\','/')
             if os.path.isdir(ff):
                 r.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (ff,f))
             else:

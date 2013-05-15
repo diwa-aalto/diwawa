@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="/static/metro/css/modern.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/metro/css/modern-responsive.css" />
-	<!--<link rel="stylesheet" href="/static/css/960/960.css" />-->
 	<link rel="stylesheet" href="/static/css/jqueryFileTree.css" type="text/css" />
 	<link rel="stylesheet" href="/static/css/jchat.css" type="text/css" />
 	<link rel="stylesheet" href="/static/css/start/jquery-ui-1.9.2.custom.css" type="text/css" />
@@ -15,7 +14,7 @@
 	<link rel="stylesheet" href="/static/css/jquery.fancybox.css" type="text/css" />
 	<link rel="stylesheet" href="/static/css/jquery.fancybox-buttons.css" type="text/css" />
 	<link rel="stylesheet" href="/static/css/jquery.fancybox-thumbs.css" type="text/css" />
-	<link rel="stylesheet" href="/static/timeglider/Timeglider.css" type="text/css" media="screen" title="no title" charset="utf-8">	
+	<link rel="stylesheet" href="/static/timeglider/Timeglider.css" type="text/css" media="screen" title="no title">	
 	<link type="text/css" href="/static/css/jplayer.blue.monday.css" rel="stylesheet" />
 	<link rel="stylesheet" href="/static/css/metrosite.css" type="text/css" />
 	<script src="/static/js/jquery.js" type="text/javascript"></script>
@@ -34,13 +33,12 @@
 	<script src="/static/js/jquery.cookie.js" type="text/javascript"></script>
 	<script src="/static/js/QTransform.js" type="text/javascript"></script>
 	<script src="/static/js/jquery.jplayer.min.js" type="text/javascript"></script>
-       <script src="/static/js/jplayer.playlist.min.js" type="text/javascript"></script>
+    <script src="/static/js/jplayer.playlist.min.js" type="text/javascript"></script>
 	<script src="/static/metro/javascript/accordion.js" type="text/javascript"></script>
 	<script src="/static/metro/javascript/buttonset.js" type="text/javascript"></script>
 	<script src="/static/metro/javascript/carousel.js" type="text/javascript"></script>
 	<script src="/static/metro/javascript/tile-slider.js" type="text/javascript"></script>
 	<script src="/static/metro/javascript/dropdown.js" type="text/javascript"></script>
-	<!--<script src="/static/metro/javascript/pagecontrol.js" type="text/javascript"></script>-->
 	<script src="/static/js/jquery.emailSpamProtection.1.0.js" type="text/javascript"></script>
 	<script src="/static/js/jquery.bxSlider.min.js" type="text/javascript"></script>
 	<script src="/static/js/jquery.filedownload.js" type="text/javascript"></script>
@@ -53,109 +51,101 @@
 		}
 	</style>
 	<script type="text/javascript">
-	function getFileExtension(filename){
-	return filename.split('.').pop();
-}
-function path_to_localhost(path){
-	if(path.indexOf("C:")>=0){
-		url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
-		console.log(url);
-		return url;
-	}
-	console.log(path+' no C:\ found');
-	return path;
-}
-function getFileName(filepath){
-	return filepath.replace(/^.*[\\\/]/, '');
-	}
-	function getDocHeight() {
-   	var db = document.body;
-	var dde = document.documentElement;
- 
-	var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
-	return docHeight;
-	}
-$(document).ready(function(){ 
-	$('div.navigation-bar-inner ul').each(function(){
-	    // For each set of tabs, we want to keep track of
-	    // which tab is active and it's associated content
-	    var $active, $content, $links = $(this).find('a');
-		console.log('running tabs');
-	    // If the location.hash matches one of the links, use that as the active tab.
-	    // If no match is found, use the first link as the initial active tab.
-	    $active = $($links.filter('[href="'+location.hash+'"]')[0] || $links[0]);
-	    $active.parent().addClass('active');
-	    $content = $($active.attr('href'));
-		
-		console.log('active:'+$active+'links:'+$links);
-	    // Hide the remaining content
-	    $links.not($active).each(function () {
-	        $($(this).attr('href')).hide();
-	    });
-	
-	    // Bind the click event handler
-	    $(this).on('click', 'a', function(e){
-	        // Make the old tab inactive.
-	        $active.parent().removeClass('active');
-	        $content.hide();
-	
-	        // Update the variables with the new link and content
-	        $active = $(this);
-	        $content = $($(this).attr('href'));
-	
-	        // Make the tab active.
-	        $active.parent().addClass('active');
-	        $content.show();
-	
-	        // Prevent the anchor's default click action
-	        e.preventDefault();
-	    });
-	});
-
-	$("body").emailSpamProtection("email");		
-	    $('.filedownload').click(function(e) {
-	    e.preventDefault();  //stop the browser from following
-	    window.location.href = '/static/dl/DiwaCS-setup-0.8.7.exe';
-	});
-});
- 
+		function getFileExtension(filename){
+			return filename.split('.').pop();
+		}
+		function path_to_localhost(path){
+			if(path.indexOf("C:")>=0){
+				url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
+				return url;
+			}
+			return path;
+		}
+		function getFileName(filepath){
+			return filepath.replace(/^.*[\\\/]/, '');
+		}
+		function getDocHeight() {
+   			var db = document.body;
+			var dde = document.documentElement;
+			var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
+			return docHeight;
+		}
+		$(document).ready(function(){ 
+			$('div.navigation-bar-inner ul').each(function(){
+			    // For each set of tabs, we want to keep track of
+			    // which tab is active and it's associated content
+			    var $active, $content, $links = $(this).find('a');
+				console.log('running tabs');
+			    // If the location.hash matches one of the links, use that as the active tab.
+			    // If no match is found, use the first link as the initial active tab.
+			    $active = $($links.filter('[href="'+location.hash+'"]')[0] || $links[0]);
+			    $active.parent().addClass('active');
+			    $content = $($active.attr('href'));
+				
+				console.log('active:'+$active+'links:'+$links);
+			    // Hide the remaining content
+			    $links.not($active).each(function () {
+			        $($(this).attr('href')).hide();
+			    });
+			
+			    // Bind the click event handler
+			    $(this).on('click', 'a', function(e){
+			        // Make the old tab inactive.
+			        $active.parent().removeClass('active');
+			        $content.hide();
+			
+			        // Update the variables with the new link and content
+			        $active = $(this);
+			        $content = $($(this).attr('href'));
+			
+			        // Make the tab active.
+			        $active.parent().addClass('active');
+			        $content.show();
+			
+			        // Prevent the anchor's default click action
+			        e.preventDefault();
+			    });
+			});
+			$("body").emailSpamProtection("email");		
+	    	$('.filedownload').click(function(e) {
+	   			e.preventDefault();  //stop the browser from following
+	    		window.location.href = '/static/dl/DiwaCS-setup-0.8.7.exe';
+			});
+		});
 	{% block javascript %}{% endblock %}
-	
 	</script>	
 </head>  
 {% load pages %}
 <body>
-	<div class="top_banner"><div class="top_logo"></div></div>
+	<div class="top_banner">
+		<div class="top_logo"></div>
+	</div>
 	<div class="page-control" data-role="page-control">
-	<header>
-		
-		<div class="nav-bar">
-   			<div class="nav-bar-inner">
-        		
-				<ul class="menu">
-					<li{% if tab == 'diwaweb'%} class="active"{% endif %}><a href="/" title="DiWa Web Application">Web Application</a></li>
-					<li {% if tab == 'diwamb'%} class="active"{% endif %}><a href="/mb/" title="DiWa Meeting Browser">Meeting Browser</a></li>
-					<li {% if tab == 'stats'%} class="active"{% endif %}><a href="/stats/" title="DiWa Statistics">Stats</a></li>
-					{% show_ordered_flatpages_menu flatpage.id %}
-
-				</ul>        
-			</div>
-		</div>
-	</header>
-
-	<div class="frames">
-	{% block flatpage_content %}{% endblock %}
-	<section class="frame{% if tab == 'diwaweb' or tab == 'diwamb' or tab == 'stats'%} active{% endif %}" id="diwaweb">       
-		<div class="page">
-			<div class="page-region">
-				<div class="page-region-content">
-					{% block content %}{% endblock %}
+		<header>
+			
+			<div class="nav-bar">
+	   			<div class="nav-bar-inner">
+	        		
+					<ul class="menu">
+						<li {% if tab == 'diwaweb'%} class="active"{% endif %}><a href="/" title="DiWa Web Application">Web Application</a></li>
+						<li {% if tab == 'diwamb'%} class="active"{% endif %}><a href="/mb/" title="DiWa Meeting Browser">Meeting Browser</a></li>
+						<li {% if tab == 'stats'%} class="active"{% endif %}><a href="/stats/" title="DiWa Statistics">Stats</a></li>
+						{% show_ordered_flatpages_menu flatpage.id %}
+					</ul>        
 				</div>
 			</div>
-		</div>   
-	</section>	
-	<!-- end of #diwaweb -->
-
+		</header>
+	<div class="frames">
+		{% block flatpage_content %}{% endblock %}
+		<section class="frame{% if tab == 'diwaweb' or tab == 'diwamb' or tab == 'stats'%} active{% endif %}" id="diwaweb">       
+			<div class="page">
+				<div class="page-region">
+					<div class="page-region-content">
+						{% block content %}{% endblock %}
+					</div>
+				</div>
+			</div>   
+		</section>	
 	</div> 
 </div>	      
 </body>  

@@ -18,14 +18,13 @@ function onselect(event) {
 		 $('.pause').hide();
 		$('.play').show();
 
-      		//$("#canplay-icon").addClass("icon-blocked fg-color-red").removeClass("icon-music fg-color-blue");
       		$('#row'+row).addClass("selected-row");
       		if(item.end != undefined){
       			timeline.setVisibleChartRange(item.start, item.end);
       			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(2).html()).trigger('keyup');
       		}else{
       			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(1).html()).trigger('keyup');
-      			$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > div > b").attr('id')},function(data){  		
+      			$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > div > a > b").attr('id')},function(data){  		
       			var audio = {};
       			$.each(data,function(key,val){
       				console.log(key+':'+val);
