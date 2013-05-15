@@ -261,11 +261,12 @@ def get_event_files(event_id, directory):
     if idx == -1:
         return '[]'		
     directory = os.path.join(PROJECTS_PATH, directory[idx:]).replace('\\', '/')
+    idx = directory.find('Projects') + 9
     os.chdir(directory)
     fs = glob.glob("*/%s_*" % (event_id))
     if 'C:' in os.getcwd():
-        return str([os.path.join(directory, f).encode('ascii').replace('C:/', '/static/').replace("\\", "/") for f in fs]).replace("'", '"')
-    return str([os.path.join(directory, f).encode('ascii').replace('share', 'static') for f in fs]).replace("'", '"')
+        return str([os.path.join('/static/Projects', directory[idx:], f).encode('utf-8').replace('C:/', '/static/').replace("\\", "/") for f in fs]).replace("'", '"')
+    return str([os.path.join('/static/Projects', directory[idx:], f).encode('utf-8').replace('share', 'static') for f in fs]).replace("'", '"')
 
 
 def event_has_audio(event_id, directory):
@@ -281,6 +282,7 @@ def event_has_audio(event_id, directory):
     if idx == -1:
         return '[]'        
     directory = os.path.join(PROJECTS_PATH, directory[idx:]).replace('\\', '/')
+    idx = directory.find('Projects') + 9
     print directory
     os.chdir(directory)
     fs = glob.glob("Audio/%s_*" % (event_id))
