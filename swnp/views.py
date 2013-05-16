@@ -4,12 +4,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
 from models import *
 from django.db.models import Count, F
-import utils
-import os
 from datetime import datetime, timedelta
 from jchat.models import Room
 from django.core import serializers
-import json
 from django.forms.models import model_to_dict
 from decorators import custom_login
 from operator import itemgetter
@@ -18,77 +15,59 @@ from django.db.models import Q
 from django import forms
 from django.contrib import messages
 from django.conf import settings
+import utils
+import os
+import urllib
+import json
+
 IP_ADDR = getattr(settings, "IP_ADDR", "192.168.1.10")
 PROJECTS_PATH = getattr(settings, "PROJECTS_PATH", "/")
+SCREEN_IMAGES = getattr(settings, "SCREEN_IMAGES", "/")
+TEMP_DIR = getattr(settings, "TEMP_DIR", "/")
 UNSETTED = False
+
+
 def get_activity():
+    """ Fetches the active activity for PGM_GROUP 1
+        
+        :rtype Activity: 
+        """
     try:
         activity = Activity.objects.filter(active=1).latest('id')
     except Activity.DoesNotExist:
         activity = None
-    return activity 
+    return activity
+
+ 
 @custom_login   
 @csrf_protect
 def index(request,template):
-    """time__gte=datetime.now()-timedelta(minutes=2),"""
-    print request.get_full_path(), request.REQUEST
-    print template
-    ip = request.META['X-Forwarded-For'] if 'X-Forwarded-For' in request.META else request.META['REMOTE_ADDR']
     activity = get_activity()
     if activity:
         room = Room.objects.get_or_create(activity.project)
     else:    
         room = None
+        
     if 'tab' in request.REQUEST:
         tab = request.REQUEST['tab']
     else:
-        tab = "diwaweb"        
-    projects = Project.objects.filter(company__id=1).order_by('name')        
-    nodes = Computer.objects.filter(time__gte=datetime.now()-timedelta(minutes=2),screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')
-    print nodes
-    if not nodes:
-        Activity.unset_all()
-    node_list = []
-    for node in nodes:
-        path = '/share/screen_images/'+str(node.wos_id)+'.png'
-        print node,path
-        if os.path.isfile(path) or node.wos_id==245:
-            node_list.append({'node':node,'img':'/static/screen_images/'+str(node.wos_id)+'.png'})
-        else:
-            node_list.append({'node':node,'img':'/static/screen_images/SCREEN.png'})    
-    temp = 'index.html' if template=='norm' else 'metro.html'
-    return render_to_response(temp,{'activity':activity,'tab':tab,'nodes':nodes,'chat_id':room.id if room else None,'node_list':node_list,'projects':projects},context_instance=RequestContext(request))
+        tab = "diwaweb"    
+            
+    projects = Project.objects.filter(company__id=1).order_by('name')           
+    return render_to_response("metro.html", {'activity':activity,'tab':tab,'nodes':nodes,'chat_id':room.id if room else None,'projects':projects}, context_instance=RequestContext(request))
+
+
 @custom_login   
 @csrf_protect
 def diwamb(request):
-    """time__gte=datetime.now()-timedelta(minutes=2),"""
     projects = Project.objects.filter(company__id=1).order_by('name')
     activity = get_activity() 
-    print "rendering"       
-    return render_to_response('meetingbrowser.html',{'projects':projects,'activity':activity,'tab':'diwamb'},context_instance=RequestContext(request))
+    return render_to_response('meetingbrowser.html', {'projects':projects,'activity':activity,'tab':'diwamb'}, context_instance=RequestContext(request))
 
-def project_timeline_json(request,id):
+
+def project_json(request,project_id):
     try:
-        project = Project.objects.get(id=id)
-    except Project.DoesNotExist:
-        project = None
-        
-    if project:
-        data = [{'type':'session','start':session.starttime,'end':session.endtime,'id':session.id,'name':session.name}for session in project.session_set.all()]
-        data += [{'type':'fileaction','start':action.action_time,'id':action.id, 'action':action.action.name, 'path':os.path.basename(action.file.path),'ext':os.path.splitext(action.file.path)[1]}for action in  Fileaction.objects.filter(file__project=project).order_by('action_time')]
-        actions = Fileaction.objects.filter(file__project=project).order_by('action_time').values('id','file','action','action_time')
-        data += [{'type':'event','start':event.time,'id':event.id,'title':event.title,'desc':event.desc}for event in Event.objects.filter(session__project=project).order_by('time')]      
-        events = Event.objects.filter(session__project=project).order_by('time').values('id','time','desc','title')    
-        data_sorted = sorted(data, key=itemgetter('start'))      
-        counts = [k for k,v in Counter(map(lambda x:x['start'],data_sorted)).items() if v > 1]
-        print counts  
-        return HttpResponse(json.dumps(data_sorted,default=utils.date_handler), mimetype='application/json')
-    else:
-        return HttpResponse('{}')  
-    
-def project_json(request,id):
-    try:
-        project = Project.objects.get(id=id)
+        project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
         project = None
         
@@ -101,17 +80,18 @@ def project_json(request,id):
     else:
         return HttpResponse('{}')            
 
+
 def event_files(request):
     if 'event_id' in request.GET:
         event_id = request.GET['event_id']
         project_id = Event.objects.get(pk=event_id).session.project.id
-        print project_id,event_id,"event_files"
         return HttpResponse(utils.get_event_files(event_id, Project.objects.get(pk=project_id).dir), mimetype='application/json')
     return HttpResponse('{}', mimetype='application/json')
+
+
 def has_audio(request):
     if 'event_id' in request.REQUEST:
         event_id = request.REQUEST['event_id']
-        print "has event_id",event_id
         try:
             event = Event.objects.get(pk=event_id)
             project = event.session.project
@@ -119,24 +99,13 @@ def has_audio(request):
             return HttpResponse("False")
         return HttpResponse(str(utils.event_has_audio(event_id,project.dir)))
     return HttpResponse("False")    
-@csrf_protect
-def project_select(request):
-    response = "ERROR"
-    if request.is_ajax() and request.method == 'POST' and 'id' in request.POST:
-        project = Project.objects.get(id=request.POST['id'])
-        print 'selected project',project
-        activity = get_activity()
-        if activity:
-            activity.project = project
-            activity.save()
-            utils.send_project(int(project.id))
-            response = 'OK'
-    return HttpResponse(response)
+
 
 @csrf_protect
 def projects_json(request):
     projects = [model_to_dict(project) for project in Project.objects.all()]
     return HttpResponse(json.dumps(projects,default=utils.date_handler), mimetype='application/json')
+
     
 @csrf_protect
 def shutdown(request):
@@ -145,16 +114,16 @@ def shutdown(request):
         utils.send_command('shutdown /p')
         response = 'OK'
     return HttpResponse(response)       
+
+
 @csrf_protect
 def event(request):
     response = "ERROR"
     activity = get_activity()
-    print str(activity)
-    if request.is_ajax() and request.method == 'POST' and activity:
-        
+    if request.is_ajax() and request.method == 'POST' and activity:    
         title=None 
         if 'title' in request.POST:
-            title=request.POST['title'] 
+            title=request.POST['title'].strip() 
         try:
             if activity:
                 session = activity.session
@@ -162,14 +131,16 @@ def event(request):
                 session = None    
             e = Event(title=title,session=session)
             e.save()
-            project_path = activity.project.dir if activity else '\\\\192.168.1.10\\Pictures'
+            project_path = activity.project.dir if activity else None
             utils.snaphot(project_path)
             utils.send_screenshot()
             utils.send_save_audio()
             response = "OK"
-        except Exception,err:
-            print "error:",str(err)       
+        except Exception as e:
+            print e    
     return HttpResponse(response)   
+
+
 @custom_login  
 @csrf_protect
 def chat(request):
@@ -178,21 +149,16 @@ def chat(request):
         room = Room.objects.get_or_create(activity.project)
     else:    
         room = None   
-    return render_to_response('chat.html',{'activity':activity,'chat_id':room.id if room else None},context_instance=RequestContext(request))
+    return render_to_response('chat.html', {'activity':activity,'chat_id':room.id if room else None}, context_instance=RequestContext(request))
+
+
 def awake(request):
     if request.method == 'GET':
         utils.awake()
         return HttpResponse('OK')
     return HttpResponse('ERROR') 
     
-def ipcamera(request,command):
-    response = ''
-    if command == 'start':
-        response = utils.save_ipcamera_stream()
-    elif command == 'stop':
-        response = utils.stop_ipcamera_stream()    
-    return HttpResponse(response)
-   
+
 @csrf_protect
 def activity(request): 
     if request.is_ajax() and request.method == 'GET':
@@ -206,133 +172,97 @@ def activity(request):
     else:
         return HttpResponse(json.dumps({'status':'error'}), mimetype='application/json')
     
+
 @csrf_protect
 def nodes(request): 
     if request.is_ajax() and request.method == 'GET':
         global UNSETTED
-        nodes = Computer.objects.filter(time__gte=datetime.now()-timedelta(seconds=15),screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')
-        #nodes = Computer.objects.filter(wos_id__gte=2,wos_id__lte=4).annotate(dcount=Count('name')).order_by('wos_id')
-        print nodes
-        try:
-            if not nodes and not UNSETTED:
-                UNSETTED = True
-                Activity.unset_all()
-            elif nodes:
-                UNSETTED = False    
-            node_list = []
-        except Exception, e:
-            print str(e)
-        node_list = []    
+        nodes = Computer.objects.filter(time__gte=datetime.now()-timedelta(seconds=15),screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')   
+        if not nodes:
+            Activity.unset_all()  
+        node_list = []   
         for node in nodes:
-            #path = '\\\\192.168.1.10\\static\\screen_images\\'+str(node.wos_id)+'.png'
-            path = os.path.join('/share/SCREEN_IMAGES/',str(node.wos_id)+'.png')
-            print node,path
+            path = os.path.join(SCREEN_IMAGES,str(node.wos_id)+'.png')
             if os.path.isfile(path):
                 node_list.append({'node':model_to_dict(node),'img':'/static/screen_images/'+str(node.wos_id)+'.png'})
             else:
                 node_list.append({'node':model_to_dict(node),'img':'/static/screen_images/SCREEN.png'})    
-        json_serializer = serializers.get_serializer("json")()
-        response =  json_serializer.serialize(nodes, ensure_ascii=False, indent=2, use_natural_keys=True)
         return HttpResponse(json.dumps(node_list,default=utils.date_handler), mimetype='application/json')
     else:
         return HttpResponse(json.dumps({'status':'error'}), mimetype='application/json')
 
-    #return render_to_response('nodes.html',{'activity':activity,'nodes':nodes,'node_list':node_list},context_instance=RequestContext(request))
-                       
+
 @csrf_protect
-def upload(request,id):
-    path = "//share//Projects//temp"
-    #path = "C:\\temp"
+def upload(request,computer_id):
+    path = TEMP_DIR
     try:
         activity = Activity.objects.filter(active=True).latest('id')
         path = activity.project.dir
     except Activity.DoesNotExist:
         pass 
-    print "upload started",id,type(id)
     try:
-        if int(id):
-            c = Computer.objects.get(id=id)	
+        if int(computer_id):
+            c = Computer.objects.get(pk=computer_id)	
         if request.is_ajax() and request.method == 'POST':
-            print "post keys"
             uploaded_path = None
-            for key, value in request.POST.iteritems() :
-                print key, value
             if 'file' in request.POST:
-                print "only file link"
-                send_path = [request.POST['file'].encode('iso-8859-1').replace('/share','\\\\192.168.1.10')]
-                print send_path
+                # We are handling a file link
+                send_path = [request.POST['file'].encode('utf-8')]
             else:    
-                print request.FILES
+                # We are uploading files
                 uploaded_path = handle_uploaded_file(request.FILES,path)
+                send_path = [w.replace(PROJECTS_PATH[:PROJECTS_PATH.find('Projects')],'\\\\'+IP_ADDR).replace('/','\\') for w in uploaded_path]
                 
-            if uploaded_path:
-                print "uploaded path"
-                send_path = [w.replace('//share','\\\\'+IP_ADDR) for w in uploaded_path]
-                send_path = [w.replace('//','\\') for w in send_path]
-            if int(id):    	
-                
-                if 'file' in request.POST:
-                    send_path = [w.replace('/share','\\\\'+IP_ADDR) for w in send_path]
-                    send_path = [w.replace('//','\\') for w in send_path]
-                    send_path = [w.replace('/','\\') for w in send_path]
-                print "sending files to",str(c.wos_id),send_path
+            if c:    	         
+                if 'file' in request.POST and IP_ADDR != "127.0.0.1":
+                    send_path = [w.replace(PROJECTS_PATH[:PROJECTS_PATH.find('Projects')],'\\\\'+IP_ADDR).replace('/','\\') for w in send_path]
                 utils.send_open_path(str(c.wos_id),c.ip,send_path)
-            return HttpResponse('SUCCESS')
-    except Exception,e:
-        print "error",str(e)
-        return HttpResponse('ERROR')
+                return HttpResponse('SUCCESS')
+    except Exception:
+        pass
+    return HttpResponse('ERROR')
+    
+    
 @csrf_protect
-def openurl(request,id):
-        c = Computer.objects.get(id=id)    
+def openurl(request,computer_id):
+        c = Computer.objects.get(pk=computer_id)    
         if request.is_ajax() and request.method == 'POST':
             if 'url' in request.POST:
                 url = request.POST['url'].encode('utf-8')
-                print "open url",str(c.wos_id),url
                 utils.send_open_url(str(c.wos_id),c.ip,url)
                 return HttpResponse('SUCCESS')
-        print "error"
         return HttpResponse('ERROR')
+
     
 def handle_uploaded_file(files,path):
     uploaded_files = []
     for filename, f in files.iteritems():
         try:
-            full_path = os.path.join(path,str(f))
-            full_path = path+'\\'+str(f)
-            fixed_path = '/share/Projects/'+full_path[full_path.find('Projects')+9:]
-            fixed_path = fixed_path.replace('\\','/')
-            print full_path,fixed_path
+            full_path = os.path.join(path,unicode(f))
+            fixed_path = os.path.join(PROJECTS_PATH,full_path[full_path.find('Projects')+9:]).replace('\\','/')
             with open(fixed_path, 'wb+') as destination:
                 for chunk in f.chunks():
                     destination.write(chunk)
             uploaded_files.append(full_path)
-        except Exception, e:
-            print e
-            with open('log.txt','wb+') as log:
-		log.write(str(e))		
-            return False
-    print "all done",str(uploaded_files)  
+        except Exception:	
+            return False 
     return uploaded_files      
-#
-# jQuery File Tree
-# Python/Django connector script
-# By Martin Skou
-#
-import os
-import urllib
+
 
 def dirlist(request):
+    """ 
+    jQuery File Tree
+    Python/Django connector script
+    By Martin Skou
+    """
     r=['<ul class="jqueryFileTree" style="display: none;">']
     try:
         r=['<ul class="jqueryFileTree" style="display: none;">']
-        d=urllib.unquote(request.POST.get('dir','c:\\temp')) 
-        print d   
+        d=urllib.unquote(request.POST.get('dir',TEMP_DIR)) 
         da = d[d.rfind("\\"):]
-        print da
         while da.startswith("\\") or da.startswith("/"):
             da = da[1:]
         d = unicode(os.path.join(PROJECTS_PATH,d[d.find('Projects')+9:]).replace('\\','/'))
-        print d
         for f in os.listdir(d):
             ff=os.path.join(d,f).replace('\\','/')
             if os.path.isdir(ff):
@@ -350,14 +280,16 @@ def dirlist(request):
 def snapshot(request):
     response = "ERROR"
     activity = get_activity()
-    if request.method == 'GET':
+    if request.method == 'GET' and activity.project and activity.session:
         try:
-            project_path = activity.project.dir if activity else '\\\\'+IP_ADDR+'\\Public'
+            project_path = activity.project.dir
             utils.snaphot(project_path)
             response = 'OK'
-        except Exception,e:
-            print str(e)
-    return HttpResponse(response)  
+        except Exception:
+            pass
+    return HttpResponse(response)
+
+  
 @csrf_protect
 def screenshot(request):
     response = "ERROR"
@@ -366,28 +298,35 @@ def screenshot(request):
         try:
             utils.send_screenshot()
             response = 'OK'
-        except Exception,e:
-            print str(e)
+        except Exception:
+            pass
     return HttpResponse(response) 
+
 
 class EventForm(forms.ModelForm):
     desc = forms.CharField(widget=forms.Textarea)
     class Meta:
         model = Event
         fields = ['title']         
+
+
 @csrf_protect
 def edit_event(request,event_id):
     event = Event.objects.get(pk=event_id)
     form = EventForm(instance=event,initial={'desc':event.desc})
     if request.method == 'POST':
+        # Handle form submit
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
             form.save()
             event.desc = form.cleaned_data['desc']
             event.save()
-            messages.success(request, 'Event details saved.')    
-    return render_to_response("edit_event.html",{'event':event, 'form':form},context_instance=RequestContext(request))
+            messages.success(request, 'Event details saved.')
+        else:
+            messages.error(request, "The form is not valid.")    
+    return render_to_response("edit_event.html", {'event':event, 'form':form}, context_instance=RequestContext(request))
 
+@csrf_protect
 def stats(request):
     stats = []
     projects = Project.objects.all()
@@ -398,5 +337,4 @@ def stats(request):
         events = Event.objects.filter(session__in=sessions)
         sessions = sessions.extra(select={'dur':"SUM(TIMESTAMPDIFF(SECOND,starttime,endtime))/count(*)",'min':"MIN(TIMESTAMPDIFF(SECOND,starttime,endtime))",'max':"MAX(TIMESTAMPDIFF(SECOND,starttime,endtime))", 'count':"COUNT(*)"}).values_list('dur','min','max', 'count').get()      
         stats.append({'name':p.name, 'session_average_duration':int(sessions[0]) if sessions[0] is not None else 0,'session_min_duration':int(sessions[1]) if sessions[1] is not None else 0,'session_max_duration':int(sessions[2]) if sessions[2] is not None else 0,'session_count':sessions[3],'file_count':files.count(), 'fileaction_count':fileactions.count(), 'event_count':events.count()})
-
-    return render_to_response("stats.html",{'stats':stats,'tab':'stats'},context_instance=RequestContext(request))
+    return render_to_response("stats.html", {'stats':stats,'tab':'stats'}, context_instance=RequestContext(request))

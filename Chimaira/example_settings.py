@@ -16,6 +16,12 @@ MACS = []
 # Path to your projects base directory
 PROJECTS_PATH = ""
 
+# Path to where screen images are stored
+SCREEN_IMAGES = ""
+
+# Path to where temporary files are to be stored
+TEMP_DIR = ""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.

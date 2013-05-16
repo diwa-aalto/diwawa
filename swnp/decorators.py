@@ -1,21 +1,12 @@
-'''
-Created on 15.10.2012
-
-@author: neriksso
-'''
-from functools import wraps
 import utils
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login
+
+
 def custom_login(f):
+    """ Login with a MAC address or Guest account."""
     def wrapper(*args, **kwargs):
         request = args[0]
-        """user,created = User.objects.get_or_create(username='Guest')
-        if created:
-                user.set_password(user.username)
-                user.save()
-        user = authenticate(username=user.username,password=user.username)
-        login(args[0],user)"""
         if not request.user.is_authenticated():
             try:
                 #User is not already authenticated, try to find correct mac and login.
@@ -34,13 +25,12 @@ def custom_login(f):
                             print str(e)    
                         break
             except:
+                # failed, login guest account
                 user,created = User.objects.get_or_create(username='Guest')
                 if created:
                     user.set_password(user.username)
                     user.save()
                 user = authenticate(username=user.username,password=user.username)
-                login(args[0],user)
-        else:
-          pass   
+                login(args[0],user)   
         return f(*args, **kwargs)
     return wrapper

@@ -1,8 +1,3 @@
-'''
-Created on 19.9.2012
-
-@author: neriksso
-'''
 import zmq
 import glob
 import socket
@@ -16,6 +11,8 @@ from models import *
 from django.db.models import Count
 from datetime import timedelta
 from django.conf import settings
+
+
 IP_ADDR = getattr(settings, "IP_ADDR", "")
 MACS = getattr(settings, "MACS", [])
 PROJECTS_PATH = getattr(settings, "PROJECTS_PATH", "/")
@@ -105,26 +102,27 @@ def snaphot(path):
     :param path: Path to project's directory
     :type path: String
      """
-    path = os.path.join(PROJECTS_PATH,path[path.find('Projects')+8:])
-    path = os.path.join(path, 'Snapshots').replace('\\', '/')
-    try:
-        if not os.path.exists(path):
-            os.makedirs(path)
-    except:
-        pass
-    request = urllib2.Request("http://192.168.1.85/image/jpeg.cgi") # HTTP request
-    base64string = base64.encodestring('%s:%s' % ('admin', 'wosadmin')).replace('\n', '') # Encode username and password
-    request.add_header("Authorization", "Basic %s" % base64string)   # Add encoded credentials to the request
-    event_id = str(Event.objects.all().order_by("-id")[0].id)
-    try:
-        data = urllib2.urlopen(request).read()
-        name = event_id + '_' + datetime.datetime.now().strftime("%d%m%Y%H%M%S") + '.jpg'
-        name = os.path.join(path, name)
-        output = open(name, 'wb')
-        output.write(data)
-        output.close()
-    except Exception, e:
-        pass
+    if path:
+        path = os.path.join(PROJECTS_PATH,path[path.find('Projects')+8:])
+        path = os.path.join(path, 'Snapshots').replace('\\', '/')
+        try:
+            if not os.path.exists(path):
+                os.makedirs(path)
+        except:
+            pass
+        request = urllib2.Request("http://192.168.1.85/image/jpeg.cgi") # HTTP request
+        base64string = base64.encodestring('%s:%s' % ('admin', 'wosadmin')).replace('\n', '') # Encode username and password
+        request.add_header("Authorization", "Basic %s" % base64string)   # Add encoded credentials to the request
+        event_id = str(Event.objects.all().order_by("-id")[0].id)
+        try:
+            data = urllib2.urlopen(request).read()
+            name = event_id + '_' + datetime.datetime.now().strftime("%d%m%Y%H%M%S") + '.jpg'
+            name = os.path.join(path, name)
+            output = open(name, 'wb')
+            output.write(data)
+            output.close()
+        except Exception:
+            pass
         
 
 def send_save_audio():
