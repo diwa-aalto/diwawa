@@ -2,15 +2,12 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
-from models import *
+from models import Activity, Project, Session, Event, Fileaction, Computer, File
 from django.db.models import Count, F
 from datetime import datetime, timedelta
 from jchat.models import Room
-from django.core import serializers
 from django.forms.models import model_to_dict
 from decorators import custom_login
-from operator import itemgetter
-from collections import Counter
 from django.db.models import Q
 from django import forms
 from django.contrib import messages
@@ -41,7 +38,7 @@ def get_activity():
  
 @custom_login   
 @csrf_protect
-def index(request,template):
+def index(request):
     activity = get_activity()
     if activity:
         room = Room.objects.get_or_create(activity.project)
@@ -95,9 +92,9 @@ def has_audio(request):
         try:
             event = Event.objects.get(pk=event_id)
             project = event.session.project
+            return HttpResponse(str(utils.event_has_audio(event_id,project.dir)))
         except:
-            return HttpResponse("False")
-        return HttpResponse(str(utils.event_has_audio(event_id,project.dir)))
+            pass      
     return HttpResponse("False")    
 
 

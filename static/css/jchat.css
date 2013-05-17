@@ -4,11 +4,12 @@
 	overflow-x: hidden;
 	overflow-y: scroll; /* used for scrolling */
 	width: 92%;
-	height: 400px;
+	height: 300px;
 	margin: auto;
 	border: 1px solid #777;
 	-moz-border-radius: 5px;
 	background-color: #fff;
+	text-align: left;
 }
 #chat-form{
 	width:92%;

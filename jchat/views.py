@@ -10,10 +10,10 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.contrib.auth.models import User 
-
 from models import Room, Message
+from swnp.decorators import custom_login
 
-#@login_required
+@custom_login
 def send(request):
     '''
     Expects the following POST parameters:
@@ -30,7 +30,7 @@ def send(request):
         r.say(user, request.user,p['message'])
     return HttpResponse('')
 
-#@login_required
+@custom_login
 def sync(request):
     '''Return last message id
 
@@ -50,7 +50,7 @@ def sync(request):
     
     return HttpResponse(jsonify({'last_message_id':lmid}))
 
-#@login_required
+@custom_login
 def receive(request):
     '''
     Returned serialized data
@@ -87,13 +87,14 @@ def receive(request):
     return HttpResponse(jsonify(m, ['id','author','timestamp','message','type']))
 
 
-#@login_required
+@custom_login
 def join(request):
     '''
     Expects the following POST parameters:
     chat_room_id
     message
     '''
+    print request.user
     if 'dchat_name' in request.COOKIES:
         user = request.COOKIES['dchat_name']
         p = request.POST
@@ -103,7 +104,7 @@ def join(request):
     return HttpResponse('error')
 
 
-#@login_required
+@custom_login
 def leave(request):
     '''
     Expects the following POST parameters:
@@ -119,7 +120,7 @@ def leave(request):
     return HttpResponse('error')
 
 
-@login_required
+@custom_login
 def test(request):
     '''Test the chat application'''
     

@@ -52,30 +52,31 @@ function onselect(event) {
 }
 
 function initTimeline(data){
-var height = $(window).height()-$('header').outerHeight()-40;       	
-// specify options
-var options = {
-	'width':  '100%',
-    'height': height+'px',
-    'editable': false,
-    'style': 'box',
-	'axisOnTop':true,
-	'intervalMax':2628000000,
-	'intervalMin':300000,
-	showNavigation:true
-};
+	var height = $(window).height()-$('header').outerHeight()-40;       	
+	// specify options
+	var options = {
+		'width':  '100%',
+	    'height': height+'px',
+	    'editable': false,
+	    'style': 'box',
+		'axisOnTop':true,
+		'intervalMax':2628000000,
+		'intervalMin':300000,
+		showNavigation:true
+	};
 
-// Instantiate our timeline object.
-timeline = new links.Timeline(document.getElementById('mytimeline'));
+	// Instantiate our timeline object.
+	timeline = new links.Timeline(document.getElementById('mytimeline'));
 
-// Draw our timeline with the created data and options
-timeline.draw(data, options);	
-links.events.addListener(timeline, 'select', onselect);
+	// Draw our timeline with the created data and options
+	timeline.draw(data, options);	
+	links.events.addListener(timeline, 'select', onselect);
 }
 
 function getFileExtension(filename){
 	return filename.split('.').pop().toLowerCase();
 }
+
 function path_to_localhost(path){
 	if(path.indexOf("C:")>=0){
 		url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
@@ -84,6 +85,7 @@ function path_to_localhost(path){
 	}
 	return path;
 }
+
 function isEmpty(map) {
    for(var key in map) {
       if (map.hasOwnProperty(key)) {
@@ -92,15 +94,18 @@ function isEmpty(map) {
    }
    return true;
 }
+
 function getFileName(filepath){
 	return filepath.replace(/^.*[\\\/]/, '');
 }
+
 function getDocHeight() {
    	var db = document.body;
 	var dde = document.documentElement;
 	var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
 	return docHeight;
 }
+
 $(document).ready(function(){
 	jplayer = $('#jquery_jplayer_1').jPlayer({
 		swfPath: "/static/js",
@@ -128,6 +133,7 @@ $(document).ready(function(){
         }
     }
 });
+
 $(document).on('click','.play',function(event){
 	var parent = $(this).closest('tr');
 	if (jplayer_active != parent.attr('event')){
@@ -147,6 +153,7 @@ $(document).on('click','.play',function(event){
 	$(this).next().show();
 	
 });
+
 $(document).on('click','.pause',function(event){
 	event.stopPropagation();
 	var parent = $(this).closest('tr');
@@ -154,36 +161,28 @@ $(document).on('click','.pause',function(event){
 	$(this).hide();
 	$(this).prev().show();
 });
+
 $(document).on('click','#all_events tr',function(){
-var start = $(this).attr('start');
-var end = ($(this).attr('end') != '' ? $(this).attr('end') : '');
-if (end == ''){
-	start = Date.parse($(this).attr('start').substring(0,19)).add(-3).minute();
-	end = new Date(start.getTime()).add(6).minute().toString('yyyy-MM-ddTHH:mm:ss');
-	start = start.toString('yyyy-MM-ddTHH:mm:ss');
-}
-//timeline.setVisibleChartRange(start,end );
-timeline.setSelection([{row: eval($(this).attr('id').substring(3))}]);
-$("selected-row").removeClass("selected-row");
-onselect();
-$(this).addClass("selected-row");
+	var start = $(this).attr('start');
+	var end = ($(this).attr('end') != '' ? $(this).attr('end') : '');
+	if (end == ''){
+		start = Date.parse($(this).attr('start').substring(0,19)).add(-3).minute();
+		end = new Date(start.getTime()).add(6).minute().toString('yyyy-MM-ddTHH:mm:ss');
+		start = start.toString('yyyy-MM-ddTHH:mm:ss');
+	}
+	//timeline.setVisibleChartRange(start,end );
+	timeline.setSelection([{row: eval($(this).attr('id').substring(3))}]);
+	$("selected-row").removeClass("selected-row");
+	onselect();
+	$(this).addClass("selected-row");
 });
 
-// Write on keyup event of keyword input element
+// Write on keyup event of search input element
 $("#event_search").keyup(function(){
 	$("#all_events").dataTable().fnFilter( $(this).val() );
 	if($(this).val() == ''){
 		$(".selected-row").removeClass('selected-row');
 	}
-	// When value of the input is not blank
-/*if( $(this).val() != ""){
-		// Show only matching TR, hide rest of them
-		$("#all_events tbody>tr").hide();
-		$("#all_events td:contains-ci('" + $(this).val() + "')").parent("tr").show();
-	}else{
-		// When there is no input or clean again, show everything back
-		$("#all_events tbody>tr").show();
-	}*/
 });
 $('.fancybox').fancybox({
     helpers : {
@@ -198,15 +197,16 @@ $('.fancybox').fancybox({
     }
 });
 $('div#loading').hide();
-$("#event_search").next().click(function(){console.log('click X');$('#event_search').val('').trigger('keyup');});
+$("#event_search").next().click(function(){$('#event_search').val('').trigger('keyup');});
+
 function eventobject(id,type, start, end, title, content, hasAudio){
-this.id = id;
-this.type = type;
-this.start = start;
-this.end = end;
-this.title = title;
-this.content = content;	
-this.hasAudio=hasAudio;
+	this.id = id;
+	this.type = type;
+	this.start = start;
+	this.end = end;
+	this.title = title;
+	this.content = content;	
+	this.hasAudio=hasAudio;
 }
 
 
@@ -225,138 +225,76 @@ $('#mbprojects').change(
 			$('table#all_events tbody').empty();
 			$("#all_events").dataTable().fnClearTable();
 			$.ajax({
-    		type: "GET",
-   			 url: '/projects/'+mbproject+'/',
-    		contentType: "application/json; charset=utf-8",
-    		dataType: "json",
-    		success: function(data){
-
-				jsondata = data;
-				var events = new Array();
-				var pr_time, pr_file;
-				$.each(data,function(k,v){
-					var start, end, name;				
-					switch(k){
-						case 'sessions':
-										$.each(v,function(){
-												pr_time = null;
-												pr_file = '';
-												events.push(new eventobject(this.id,'Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
-												});
-												break;
-						case 'fileactions':
-										$.each(v,function(){
-													var action_time = Date.parse(this.action_time);
-													console.log(pr_time +':'+pr_file);
-													if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
-														console.log("same file and time");
-														events[events.length-1].content = events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
-													}else{
-													events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
-													pr_time = action_time.clone();
-													pr_file = this.file__path;
-													}
-												});
-												break;
-						case 'events':
-										$.each(v,function(){
+    			type: "GET",
+   			 	url: '/projects/'+mbproject+'/',
+    			contentType: "application/json; charset=utf-8",
+    			dataType: "json",
+    			success: function(data){
+					jsondata = data;
+					var events = new Array();
+					var pr_time, pr_file;
+					$.each(data,function(k,v){
+						var start, end, name;				
+						switch(k){
+							case 'sessions':
+											$.each(v,function(){
 													pr_time = null;
 													pr_file = '';
-													events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,event_content('event',this)));
-												});
-												break;						
-						default:
-									break;	
-					}
-					if (start == undefined)
-						return true;
-					//$('table#all_events tbody').append('<tr start="'+start+'" end="'+end+'"><td>'+name+'</td><td>'+start+'</td><td>'+end+'</li>');
-					
-				});
-				events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
-				initTimeline(events);
-				$.each(events,function(k,v){ $('table#all_events tbody').append('<tr event="'+v.id+'" id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td><td></td></tr>');if(v.type=='Event'){check_event_audio(v.id,'#row'+k);}});
-				$('#all_events').dataTable( {
-        "sScrollY": "400px",
-        "bPaginate": false,
-        "bScrollCollapse": true,
-        "bSort": false,
-        "bInfo": false,
-        "bDestroy": true,
-        "sDom": 'lrtp',
-    } );	
-    $('div#loading').hide();
-			},
-    		error: function (xhr, textStatus, errorThrown) {
-       		 console.log(xhr.responseText);
-    		}
-		});
-			/*$.getJSON('/projects/'+mbproject+'/',function(data){
-
-				jsondata = data;
-				var events = new Array();
-				var pr_time, pr_file;
-				$.each(data,function(k,v){
-					var start, end, name;				
-					switch(k){
-						case 'sessions':
-										$.each(v,function(){
-												pr_time = null;
-												pr_file = '';
-												events.push(new eventobject(this.id,'Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
-												});
-												break;
-						case 'fileactions':
-										$.each(v,function(){
-													var action_time = Date.parse(this.action_time);
-													console.log(pr_time +':'+pr_file);
-													if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
-														console.log("same file and time");
-														events[events.length-1].content = events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
-													}else{
-													events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
-													pr_time = action_time.clone();
-													pr_file = this.file__path;
-													}
-												});
-												break;
-						case 'events':
-										$.each(v,function(){
-													pr_time = null;
-													pr_file = '';
-													events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,'<i class="icon-tag"></i>'+'<b id="' + this.id + '">'+this.title+'</b>'));
-												});
-												break;						
-						default:
-									break;	
-					}
-					if (start == undefined)
-						return true;
-					//$('table#all_events tbody').append('<tr start="'+start+'" end="'+end+'"><td>'+name+'</td><td>'+start+'</td><td>'+end+'</li>');
-					
-				});
-				events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
-				initTimeline(events);
-				$.each(events,function(k,v){ $('table#all_events tbody').append('<tr event="'+v.id+'" id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td><td></td></tr>');check_event_audio(v.id,'#row'+k);});
-				$('#all_events').dataTable( {
-        "sScrollY": "400px",
-        "bPaginate": false,
-        "bScrollCollapse": true,
-        "bSort": false,
-        "bInfo": false,
-        "bDestroy": true,
-        "sDom": 'lrtp',
-    } );	
-    $('div#loading').hide();
-			});*/
-		
-		}
-	});
+													events.push(new eventobject(this.id,'Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
+													});
+													break;
+							case 'fileactions':
+											$.each(v,function(){
+														var action_time = Date.parse(this.action_time);
+														if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
+															events[events.length-1].content = events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
+														}else{
+														events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
+														pr_time = action_time.clone();
+														pr_file = this.file__path;
+														}
+													});
+													break;
+							case 'events':
+											$.each(v,function(){
+														pr_time = null;
+														pr_file = '';
+														events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,event_content('event',this)));
+													});
+													break;						
+							default:
+										break;	
+						}
+						if (start == undefined)
+							return true;
+					});
+					events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
+					initTimeline(events);
+					$.each(events,function(k,v){ $('table#all_events tbody').append('<tr event="'+v.id+'" id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td><td></td></tr>');if(v.type=='Event'){check_event_audio(v.id,'#row'+k);}});
+					$('#all_events').dataTable( {
+				        "sScrollY": "400px",
+				        "bPaginate": false,
+				        "bScrollCollapse": true,
+				        "bSort": false,
+				        "bInfo": false,
+				        "bDestroy": true,
+				        "sDom": 'lrtp',
+				    } );	
+	    			$('div#loading').hide();
+				},
+			    error: function (xhr, textStatus, errorThrown) {
+			       	console.log(xhr.responseText);
+			       	$('div#loading').hide();
+	    		}
+		});		
+	}
+});
 $('#mbprojects option[id="{% if activity.project %}{{activity.project.id}}{% else %}mb_project_0{% endif %}"]').prop('selected', true);	
 {% if activity.project %}
-$('#mbprojects').trigger('change');
+	$('#mbprojects').trigger('change');
 {% endif %}
 });
+
 function check_event_audio(event_id, obj_id){
 	$.get('/event_has_audio/',{ event_id:event_id}, function(res) {
 		if (res != '[{}]' && res != 'False'){
@@ -367,8 +305,8 @@ function check_event_audio(event_id, obj_id){
 		}
 	});
 }
+
 function event_content(type,event){
-	console.log('event content');
 	var output = "";
 	switch(type){
 		case 'fileaction':
@@ -381,8 +319,8 @@ function event_content(type,event){
 	}
 	return output;
 }
+
 function fileaction_icon(type){
-	console.log('icon-type');
 	var icon = '';
 	switch(type){
 		case 'Created':
@@ -402,6 +340,7 @@ function fileaction_icon(type){
 	}
 	return icon;
 }
+
 // jQuery expression for case-insensitive filter
 $.extend($.expr[":"], 
 {
@@ -410,11 +349,13 @@ $.extend($.expr[":"],
 		return (elem.textContent || elem.innerText || $(elem).text() || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
 	}
 });
+
 function edit_event_click(event_id){
 	$("a#edit_event_link").attr("href", "/event/"+event_id+"/edit/")
 	$('#edit_event_link').trigger('click');
 	return false;
 }
+
 function parse_projects_link(link){
 	var baseurl = "/static/Projects/";
 	baseurl += link.substr(link.indexOf("Projects")+9)

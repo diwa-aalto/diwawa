@@ -1,8 +1,0 @@
-{% for node in node_list %}
-<div class="node" id="node{{node.node.wos_id}}" name="{{node.node.id}}"><h6>{{node.node.name}}</h6></div>
-{% empty %}
-<div class="error alert-message">
-	<p class='notice'> No nodes online!</p>
-</div>
-{% endfor %}
-
