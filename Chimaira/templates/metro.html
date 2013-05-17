@@ -360,11 +360,14 @@
 	<div class="span4 bg-color-purple equal_height">
 		<div id="chat_container">
 			<h2>Chat</h2>
-			<div id="chat_error" class="error alert-message">
-				<p class='notice'>
-					Chat not available!
-				</p>
-			</div>
+			<div id="chat_error" class="span4">
+					 		<div class="notices">
+						         <div class="bg-color-red">
+						             <div class="notice-header">Chat is not available!</div>
+						             <div class="notice-text fg-color-darken">Chat is only available, when a project is selected.</div>
+						         </div>
+							</div>
+						</div>
 			<form id="fchat">
 				<input id="name" name="name" required type="text" onblur="if (this.value == '') {this.value = 'Enter your name';}" onfocus="if (this.value == 'Enter name here!') {this.value = '';}" value="Enter name here!">
 				<input type="submit" name="submit"  id="chat_submit" value="Open Chat" />

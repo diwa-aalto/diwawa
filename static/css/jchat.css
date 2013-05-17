@@ -125,3 +125,17 @@
 .message{
 	width:80%;
 }
+#chat_error{
+	margin: 0 auto;
+	float:none;
+}
+#chat_error .notice-image i{
+	font-size: 35px;
+}
+#chat_error .notice-text{
+	font-size: 1em;
+}
+#chat_error .notice-header{
+	font-size: 1.2em;
+	font-weight: bold;
+}

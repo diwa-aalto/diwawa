@@ -91,8 +91,14 @@
 	    	<div class="page-region-content">
 	        	<div class="grid">
 	    			<div class="row" style="margin: 0 auto; text-align: center;">					
-						<div id="chat_error" class="error alert-message">
-							<p class='notice'> Chat not available!</p>
+						<div id="chat_error" class="span6">
+					 		<div class="notices">
+						         <div class="bg-color-red">
+						             <div class="notice-image"> <i class="icon-warning fg-color-darken"></i> </div>
+						             <div class="notice-header">Chat is not available!</div>
+						             <div class="notice-text fg-color-darken">Chat is only available, when a project is selected.</div>
+						         </div>
+							</div>
 						</div>
 						<form id="fchat">
 							<input id="name" name="name" required type="text" onblur="if (this.value == '') {this.value = 'Enter name here!';}" onfocus="if (this.value == 'Enter name here!') {this.value = '';}" value="Enter name here!" style="margin-right:10px: margin-bottom:10px;height: 32px;" />
