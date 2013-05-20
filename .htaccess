@@ -1,4 +1,4 @@
 AddHandler fastcgi-script .fcgi
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ chimaira.fcgi/$1 [QSA,L]
+RewriteRule ^(.*)$ diwawa.fcgi/$1 [QSA,L]

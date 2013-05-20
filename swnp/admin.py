@@ -16,8 +16,7 @@ class ProjectAdmin(admin.ModelAdmin):
         if obj: # editing an existing object
             return self.readonly_fields + ('company',)
         return self.readonly_fields
- 
- 
+
 class ExtendedFlatPageForm(FlatpageForm):
     class Meta:
         model = ExtendedFlatPage
