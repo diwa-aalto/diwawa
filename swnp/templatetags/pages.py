@@ -1,8 +1,3 @@
-'''
-Created on 18.1.2013
-
-@author: neriksso
-'''
 from django import template
 from django.utils.safestring import SafeString
 from swnp.models import ExtendedFlatPage
