@@ -56,7 +56,7 @@ FORCE_SCRIPT_NAME = ''
 
 # The directory to store data temporarily while uploading files. 
 # If None, Django will use the standard temporary directory for the operating system. 
-# For example, this will default to ‘/tmp’ on *nix-style operating systems.
+# For example, this will default to /tmp on *nix-style operating systems.
 FILE_UPLOAD_TEMP_DIR = None
 
 # If you set this to False, Django will make some optimizations so as not

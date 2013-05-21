@@ -3,12 +3,11 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
 from models import Activity, Project, Session, Event, Fileaction, Computer, File
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from datetime import datetime, timedelta
 from jchat.models import Room
 from django.forms.models import model_to_dict
 from decorators import custom_login
-from django.db.models import Q
 from django import forms
 from django.contrib import messages
 from django.conf import settings
@@ -335,3 +334,4 @@ def stats(request):
         sessions = sessions.extra(select={'dur':"SUM(TIMESTAMPDIFF(SECOND,starttime,endtime))/count(*)",'min':"MIN(TIMESTAMPDIFF(SECOND,starttime,endtime))",'max':"MAX(TIMESTAMPDIFF(SECOND,starttime,endtime))", 'count':"COUNT(*)"}).values_list('dur','min','max', 'count').get()      
         stats.append({'name':p.name, 'session_average_duration':int(sessions[0]) if sessions[0] is not None else 0,'session_min_duration':int(sessions[1]) if sessions[1] is not None else 0,'session_max_duration':int(sessions[2]) if sessions[2] is not None else 0,'session_count':sessions[3],'file_count':files.count(), 'fileaction_count':fileactions.count(), 'event_count':events.count()})
     return render_to_response("stats.html", {'stats':stats,'tab':'stats'}, context_instance=RequestContext(request))
+
