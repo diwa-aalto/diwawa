@@ -281,7 +281,6 @@ def event_has_audio(event_id, directory):
         return '[]'        
     directory = os.path.join(PROJECTS_PATH, directory[idx:]).replace('\\', '/')
     idx = directory.find('Projects') + 9
-    print directory
     os.chdir(directory)
     fs = glob.glob("Audio/%s_*" % (event_id))
     json = {}

@@ -20,10 +20,7 @@ def send(request):
     chat_room_id
     message
     '''
-    print "should we send the message"
-    print str(request.COOKIES)
     if 'dchat_name' in request.COOKIES:
-        print "yes"
         user = request.COOKIES['dchat_name']
         p = request.POST
         r = Room.objects.get(id=int(p['chat_room_id']))
@@ -94,7 +91,6 @@ def join(request):
     chat_room_id
     message
     '''
-    print request.user
     if 'dchat_name' in request.COOKIES:
         user = request.COOKIES['dchat_name']
         p = request.POST

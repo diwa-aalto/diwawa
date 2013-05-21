@@ -13,7 +13,6 @@ def show_ordered_flatpages_menu(flatpage_id):
     flatPages = ExtendedFlatPage.objects.all().order_by('show_after')
     myString = ""
     for myPage in flatPages:
-        print flatpage_id,myPage.id
         myString += page_li( myPage, flatpage_id==myPage.id )
     return myString
 

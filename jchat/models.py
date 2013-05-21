@@ -81,7 +81,6 @@ class Room(models.Model):
                     if not name.startswith('#'):
                         name = '#'+name
                     tags.add(name)
-            print "list tags:",' '.join(tags)
             self.__add_message('s','System', ' '.join(tags))        
         return
     def leave(self, sender,user):
