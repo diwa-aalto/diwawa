@@ -17,7 +17,7 @@ class Migration(SchemaMigration):
         db.send_create_signal('swnp', ['ExtendedFlatPage'])
 
 
-        # Changing field 'Action.id'
+        """# Changing field 'Action.id'
         db.alter_column(u'action', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
 
         # Changing field 'Fileaction.id'
@@ -42,14 +42,14 @@ class Migration(SchemaMigration):
         db.alter_column(u'event', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
 
         # Changing field 'Project.id'
-        db.alter_column(u'project', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
+        db.alter_column(u'project', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))"""
 
     def backwards(self, orm):
         # Deleting model 'ExtendedFlatPage'
         db.delete_table('swnp_extendedflatpage')
 
 
-        # Changing field 'Action.id'
+        """# Changing field 'Action.id'
         db.alter_column(u'action', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
 
         # Changing field 'Fileaction.id'
@@ -74,7 +74,7 @@ class Migration(SchemaMigration):
         db.alter_column(u'event', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
 
         # Changing field 'Project.id'
-        db.alter_column(u'project', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
+        db.alter_column(u'project', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))"""
 
     models = {
         'contenttypes.contenttype': {
