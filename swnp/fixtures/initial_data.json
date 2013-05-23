@@ -79,13 +79,6 @@
     },
     {
         "pk": 1, 
-        "model": "swnp.company", 
-        "fields": {
-            "name": "Aalto"
-        }
-    },
-    {
-        "pk": 1, 
         "model": "swnp.action", 
         "fields": {
             "name": "Created"
