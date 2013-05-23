@@ -1,8 +1,8 @@
 diwawa/settings.py
 *.pyc
-/jchat/*.pyc
-diwawa/
-static/Projects/
+static/Projects
+static/screen_images
+static/admin
 logfile
 .pydevproject
 .project

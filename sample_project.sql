@@ -22,7 +22,7 @@ SET @projectid = 1;
 SET @sessionid = 4;
 
 INSERT INTO `project` (`id`,`name`, `company_id`, `dir`, `password`) VALUES
-(@projectid,'Sample Project', 1, '\\\\WOS-STORAGE\\Projects\\Sample', '');
+(@projectid,'Sample Project', 1, '\\\\192.168.1.10\\Projects\\Sample', '');
 
 INSERT INTO `session` (`id`,`name`, `project_id`, `starttime`, `endtime`, `previous_session_id`) VALUES
 (1,'', @projectid, '2012-12-03 12:30:00', '2012-12-03 13:42:00', NULL),
