@@ -78,7 +78,7 @@ cp -rf MySQL-python-1.2.3 $HOME_DIR
 rm -rf MySQL-python-1.2.3
 
 # Copy DiWaWA to home dir
-cp -rf ../ $HOME_DIR
+cp -rf ../ $HOME_DIR/diwawa
 rm -rf $HOME_DIR/QNAP_INSTALL
 
 # handle settings
