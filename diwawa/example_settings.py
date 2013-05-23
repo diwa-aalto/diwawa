@@ -19,8 +19,14 @@ PROJECTS_PATH = ""
 # Path to where screen images are stored
 SCREEN_IMAGES = ""
 
-# Path to where temporary files are to be stored
+# Path to where upload files are stored temporary
 TEMP_DIR = ""
+
+# Set to the project root directory
+SITE_ROOT = ""
+
+# Set to the IP address of the server. Used to converted local paths to network paths.
+IP_ADDR = None
 
 DATABASES = {
     'default': {
@@ -44,12 +50,6 @@ TIME_ZONE = 'Europe/Helsinki'
 LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
-
-# Set to the project root directory
-SITE_ROOT = ""
-
-# Set to the IP address of the server. Used to converted local paths to network paths.
-IP_ADDR = None
 
 # For details, see https://docs.djangoproject.com/en/dev/ref/settings/#force-script-name
 FORCE_SCRIPT_NAME = ''

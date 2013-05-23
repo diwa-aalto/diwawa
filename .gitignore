@@ -1,1 +1,9 @@
-Chimaira/settings.py
+diwawa/settings.py
+*.pyc
+/jchat/*.pyc
+diwawa/
+static/Projects/
+logfile
+.pydevproject
+.project
+.settings/

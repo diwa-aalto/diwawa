@@ -16,65 +16,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('swnp', ['ExtendedFlatPage'])
 
-
-        """# Changing field 'Action.id'
-        db.alter_column(u'action', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'Fileaction.id'
-        db.alter_column(u'fileaction', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'Session.id'
-        db.alter_column(u'session', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'Company.id'
-        db.alter_column(u'company', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'Computer.id'
-        db.alter_column(u'computer', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'File.id'
-        db.alter_column(u'file', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'User.id'
-        db.alter_column(u'user', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'Event.id'
-        db.alter_column(u'event', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))
-
-        # Changing field 'Project.id'
-        db.alter_column(u'project', 'id', self.gf('django.db.models.fields.AutoField')(primary_key=True))"""
-
     def backwards(self, orm):
         # Deleting model 'ExtendedFlatPage'
         db.delete_table('swnp_extendedflatpage')
-
-
-        """# Changing field 'Action.id'
-        db.alter_column(u'action', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'Fileaction.id'
-        db.alter_column(u'fileaction', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'Session.id'
-        db.alter_column(u'session', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'Company.id'
-        db.alter_column(u'company', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'Computer.id'
-        db.alter_column(u'computer', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'File.id'
-        db.alter_column(u'file', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'User.id'
-        db.alter_column(u'user', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'Event.id'
-        db.alter_column(u'event', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))
-
-        # Changing field 'Project.id'
-        db.alter_column(u'project', 'id', self.gf('django.db.models.fields.IntegerField')(primary_key=True))"""
 
     models = {
         'contenttypes.contenttype': {
