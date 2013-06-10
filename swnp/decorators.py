@@ -1,6 +1,6 @@
 import utils
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate, login
 
 
 def custom_login(f):
