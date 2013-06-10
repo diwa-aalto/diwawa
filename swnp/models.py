@@ -4,7 +4,8 @@ from taggit.managers import TaggableManager
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=150)
+    """ Company model. """
+    name = models.CharField(max_length=50)
     
     class Meta:
         db_table = u'company'
@@ -14,10 +15,11 @@ class Company(models.Model):
 
        
 class User(models.Model):
-    name = models.CharField(max_length=150)
-    email = models.CharField(max_length=300, blank=True)
-    title = models.CharField(max_length=150, blank=True)
-    department = models.CharField(max_length=300, blank=True)
+    """ User model. """
+    name = models.CharField(max_length=50)
+    email = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=50, blank=True)
+    department = models.CharField(max_length=100, blank=True)
     company = models.ForeignKey(Company, null=True, blank=True)
     
     class Meta:
@@ -28,10 +30,11 @@ class User(models.Model):
  
         
 class Project(models.Model):
-    name = models.CharField(max_length=150)
+    """ Project model. """
+    name = models.CharField(max_length=50)
     company = models.ForeignKey(Company)
-    dir = models.CharField(max_length=765, null=True, blank=True)
-    password = models.CharField(max_length=120, null=True, blank=True)
+    dir = models.CharField(max_length=255, null=True, blank=True)
+    password = models.CharField(max_length=40, null=True, blank=True)
     
     class Meta:
         db_table = u'project'
@@ -41,7 +44,8 @@ class Project(models.Model):
 
     
 class Session(models.Model):
-    name = models.CharField(max_length=150, null=True, blank=True)
+    """ Session model. """
+    name = models.CharField(max_length=50, null=True, blank=True)
     project = models.ForeignKey(Project)
     starttime = models.DateTimeField(null=True, blank=True)
     endtime = models.DateTimeField(null=True, blank=True)
@@ -55,11 +59,19 @@ class Session(models.Model):
         db_table = u'session' 
     
     def __unicode__(self):
-        return self.name if self.name else "%s - %s" % (self.starttime.strftime("%d.%m.%Y %H:%M") if self.starttime else "",self.endtime.strftime("%d.%m.%Y %H:%M") if self.endtime else "")     
+        if self.name:
+            return self.name
+        start = ''
+        end = ''
+        if self.starttime:
+            start = self.starttime.strftime('%d.%m.%Y %H:%M')
+        if self.endtime:
+            end = self.endtime.strftime('%d.%m.%Y %H:%M')
+        return '%s - %s' % (start, end)     
 
 
 class Action(models.Model):
-    name = models.CharField(max_length=150, blank=True)
+    name = models.CharField(max_length=50, blank=True)
     
     class Meta:
         db_table = u'action'
@@ -69,9 +81,9 @@ class Action(models.Model):
 
 
 class Computer(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=50)
     ip = models.PositiveIntegerField(null=True, blank=True)
-    mac = models.CharField(max_length=36, null=True, blank=True)
+    mac = models.CharField(max_length=12, null=True, blank=True)
     time = models.DateTimeField(null=True, blank=True)
     screens = models.IntegerField(null=True, blank=True)
     responsive = models.NullBooleanField(null=True, blank=True)
@@ -86,10 +98,10 @@ class Computer(models.Model):
 
 
 class Event(models.Model):
-    desc = models.CharField(max_length=1500,null=True, blank=True)
+    desc = models.CharField(max_length=500,null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
     session = models.ForeignKey(Session, null=True, blank=True)
-    title = models.CharField(max_length=120,null=False, blank=False)
+    title = models.CharField(max_length=40,null=False, blank=False)
     tags = TaggableManager(blank=True)
     
     class Meta:
@@ -100,7 +112,7 @@ class Event(models.Model):
 
 
 class File(models.Model):
-    path = models.CharField(max_length=765)
+    path = models.CharField(max_length=255)
     project = models.ForeignKey(Project, null=True, blank=True)
     tags = TaggableManager(blank=True)
     
@@ -127,7 +139,8 @@ class Fileaction(models.Model):
 
 
 class Projectmembers(models.Model):
-    project = models.ForeignKey(Project, null=True, db_column='Project', blank=True)
+    project = models.ForeignKey(Project, null=True, db_column='Project',
+                                blank=True)
     user = models.ForeignKey(User, null=True, db_column='User', blank=True) 
     
     class Meta:
@@ -135,37 +148,42 @@ class Projectmembers(models.Model):
 
 
 class Activity(models.Model):
-    project = models.ForeignKey(Project,related_name='activities')
-    session = models.ForeignKey(Session, null=True, blank=True,related_name='activities')
-    active = models.BooleanField(null=False,blank=False,default=True)
-    
+    project = models.ForeignKey(Project, related_name='activities')
+    session = models.ForeignKey(Session, null=True, blank=True,
+                                related_name='activities')
+    active = models.BooleanField(null=False, blank=False, default=True)
+
     class Meta:
         db_table = u'activity'
-    
+
     def save(self, *args, **kwargs):
         super(Activity, self).save(*args, **kwargs) 
-   
+
     @classmethod    
     def unset_all(act):
         qs = Activity.objects.filter(active=True)
         for item in qs:
             item.active=False
             item.save()    
-    
+
     def __unicode__(self):
-        return "%s - %s - %s" % (self.project.name,self.session,str(self.active))
+        return "%s - %s - %s" % (self.project.name, self.session,
+                                 str(self.active))
 
 
 class Sessioncomputers(models.Model):
-    session = models.ForeignKey(Session, null=True, db_column='Session', blank=True) 
-    computer = models.ForeignKey(Computer, null=True, db_column='Computer', blank=True) 
+    session = models.ForeignKey(Session, null=True, db_column='Session',
+                                blank=True) 
+    computer = models.ForeignKey(Computer, null=True, db_column='Computer',
+                                 blank=True) 
     
     class Meta:
         db_table = u'sessioncomputers'
 
 
 class Sessionparticipants(models.Model):
-    session = models.ForeignKey(Session, null=True, db_column='Session', blank=True) 
+    session = models.ForeignKey(Session, null=True, db_column='Session',
+                                blank=True) 
     user = models.ForeignKey(User, null=True, db_column='User', blank=True) 
     
     class Meta:
@@ -173,5 +191,11 @@ class Sessionparticipants(models.Model):
 
 
 class ExtendedFlatPage(FlatPageOld):
-    show_after = models.ForeignKey('ExtendedFlatPage', null=True, blank=True, default=None, related_name="flatpage_predecessor", help_text="Page that this one should appear after (if any)")
-    alt_text = models.CharField(max_length=30, null=True, blank=True, help_text="Text for link title attribute. Will show on link hover.")
+    related = 'flatpage_predecessor'
+    help1 = 'Page that this one should appear after (if any)'
+    help2 = 'Text for link title attribute. Will show on link hover.'
+    show_after = models.ForeignKey('ExtendedFlatPage', null=True, blank=True,
+                                   default=None, related_name=related,
+                                   help_text=help1)
+    alt_text = models.CharField(max_length=30, null=True, blank=True,
+                                help_text=help2)

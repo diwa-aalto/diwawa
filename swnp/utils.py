@@ -16,12 +16,17 @@ from django.conf import settings
 IP_ADDR = getattr(settings, 'IP_ADDR', '')
 MACS = getattr(settings, 'MACS', [])
 PROJECTS_PATH = getattr(settings, 'PROJECTS_PATH', '/')
+CAMERA_USERNAME = ''
+CAMERA_PASSWORD = ''
+ROUTER_USERNAME = ''
+ROUTER_PASSWORD = ''
 
 # Diwa TVs,port numbers and commands for SHARP 60LE636 IP control
 TVS = [('192.168.1.100', 10002),
        ('192.168.1.101', 10002),
        ('192.168.1.102', 10002)
 ]
+
 TV_COMMANDS = {'powr0':'POWR0   \r',
                'powr1':'POWR1   \r',
                'hdmi1':'IAVD4   \r'
@@ -128,13 +133,19 @@ def snaphot(path):
                 os.makedirs(path)
         except:
             pass
-        request = urllib2.Request("http://192.168.1.85/image/jpeg.cgi") # HTTP request
-        base64string = base64.encodestring('%s:%s' % ('admin', 'wosadmin')).replace('\n', '') # Encode username and password
-        request.add_header("Authorization", "Basic %s" % base64string)   # Add encoded credentials to the request
+        # HTTP request
+        request = urllib2.Request("http://192.168.1.85/image/jpeg.cgi")
+        # Encode username and password
+        base64string = base64.encodestring('%s:%s' % (CAMERA_USERNAME,
+                                                      CAMERA_PASSWORD))
+        base64string = base64string.replace('\n', '')
+        # Add encoded credentials to the request
+        request.add_header("Authorization", "Basic %s" % base64string)
         event_id = str(Event.objects.all().order_by("-id")[0].id)
         try:
             data = urllib2.urlopen(request).read()
-            name = event_id + '_' + datetime.datetime.now().strftime("%d%m%Y%H%M%S") + '.jpg'
+            strnow = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
+            name = event_id + '_' + strnow + '.jpg'
             name = os.path.join(path, name)
             output = open(name, 'wb')
             output.write(data)
@@ -144,8 +155,10 @@ def snaphot(path):
         
 
 def send_save_audio():
-    """Send save audio message to responsive node."""
-    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() - timedelta(minutes=2), responsive=1).annotate(dcount=Count('name')).order_by('wos_id')
+    """ Send save audio message to responsive node. """
+    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
+                                    timedelta(minutes=2), responsive=1)
+    nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes[0:1]: 
         try:
             context = zmq.Context() 
@@ -160,8 +173,10 @@ def send_save_audio():
     
 
 def send_screenshot():
-    """Send screenshot message to SCREEN nodes."""
-    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() - timedelta(minutes=2), screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')
+    """ Send screenshot message to SCREEN nodes. """
+    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
+                                    timedelta(minutes=2), screens__gt=0)
+    nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes: 
         try:
             context = zmq.Context() 
@@ -183,7 +198,9 @@ def send_command(command):
     :type command: String
 
     """
-    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() - timedelta(minutes=2), screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')
+    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
+                                    timedelta(minutes=2), screens__gt=0)
+    nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes: 
         try:
             context = zmq.Context() 
@@ -204,9 +221,14 @@ def ip_leases():
     :rtype: list
 
     """
-    request = urllib2.Request("http://192.168.1.1/device-map/clients.asp") # HTTP request
-    base64string = base64.encodestring('%s:%s' % ('admin', 'wosadmin1')).replace('\n', '') # Encode username and pass 
-    request.add_header("Authorization", "Basic %s" % base64string) # Add encoded username and pass to the request
+    # HTTP request
+    request = urllib2.Request("http://192.168.1.1/device-map/clients.asp")
+    # Encode username and pass
+    base64string = base64.encodestring('%s:%s' % (ROUTER_USERNAME,
+                                                  ROUTER_PASSWORD))
+    base64string = base64string.replace('\n', '') 
+    # Add encoded username and pass to the request
+    request.add_header("Authorization", "Basic %s" % base64string)
     try:
         data = urllib2.urlopen(request).read()
         lindex = data.find('leases =')
@@ -287,9 +309,16 @@ def get_event_files(event_id, directory):
     idx = directory.find('Projects') + 9
     os.chdir(directory)
     fs = glob.glob("*/%s_*" % (event_id))
-    if 'C:' in os.getcwd():
-        return str([os.path.join('/static/Projects', directory[idx:], f).encode('utf-8').replace('C:/', '/static/').replace("\\", "/") for f in fs]).replace("'", '"')
-    return str([os.path.join('/static/Projects', directory[idx:], f).encode('utf-8').replace('share', 'static') for f in fs]).replace("'", '"')
+    out = []
+    for f in fs:
+        v = os.path.join('/static/Projects', directory[idx:], f)
+        v = v.encode('utf-8')
+        if 'C:' in os.getcwd():
+            v = v.replace('C:/', '/static/').replace('\\', '/')
+        else:
+            v = v.replace('share', 'static')
+        out.append(v)
+    return str(out).replace("'", '"')
 
 
 def event_has_audio(event_id, directory):
@@ -312,5 +341,8 @@ def event_has_audio(event_id, directory):
     fs = glob.glob("Audio/%s_*" % (event_id))
     json = {}
     for f in fs:
-        json[os.path.splitext(f)[1][1:].encode('utf-8')] = os.path.join('/static/Projects', directory[idx:], f).encode('utf-8').replace('\\', '/')  
+        item = os.path.join('/static/Projects', directory[idx:], f)
+        item = item.encode('utf-8').replace('\\', '/')
+        elem = os.path.splitext(f)[1][1:].encode('utf-8')
+        json[elem] = item
     return '[' + str(json).replace("'", '"') + ']'

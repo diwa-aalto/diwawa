@@ -32,6 +32,7 @@ urlpatterns = patterns('swnp.views',
      url(r'^admin/', include(admin.site.urls)),
 )
 
-urlpatterns += patterns('',url(r'^logout/$', 'django.contrib.auth.views.logout'))
+logout_url = url(r'^logout/$', 'django.contrib.auth.views.logout')
+urlpatterns += patterns('', logout_url)
 
 urlpatterns += staticfiles_urlpatterns()
