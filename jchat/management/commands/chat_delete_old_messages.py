@@ -1,6 +1,7 @@
-'''
-Delete old chat messages
-'''
+"""
+Delete old chat messages.
+
+"""
 from django.core.management.base import BaseCommand, CommandError
 from jchat.models import Room, Message
 from datetime import datetime, timedelta

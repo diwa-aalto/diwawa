@@ -13,25 +13,34 @@ from datetime import timedelta
 from django.conf import settings
 
 
-IP_ADDR = getattr(settings, "IP_ADDR", "")
-MACS = getattr(settings, "MACS", [])
-PROJECTS_PATH = getattr(settings, "PROJECTS_PATH", "/")
+IP_ADDR = getattr(settings, 'IP_ADDR', '')
+MACS = getattr(settings, 'MACS', [])
+PROJECTS_PATH = getattr(settings, 'PROJECTS_PATH', '/')
 
 # Diwa TVs,port numbers and commands for SHARP 60LE636 IP control
-TVS = [('192.168.1.100', 10002), ('192.168.1.101', 10002), ('192.168.1.102', 10002)]
-TV_COMMANDS = {'powr0':'POWR0   \r', 'powr1':'POWR1   \r', 'hdmi1':'IAVD4   \r'}
+TVS = [('192.168.1.100', 10002),
+       ('192.168.1.101', 10002),
+       ('192.168.1.102', 10002)
+]
+TV_COMMANDS = {'powr0':'POWR0   \r',
+               'powr1':'POWR1   \r',
+               'hdmi1':'IAVD4   \r'
+}
      
 def send_open_path(target, ip, path):
-    """ Send open path to target at ip.
-    
+    """
+    Send open path to target at ip.
+
     :param target: The target's wos id.
     :type target: String
+
     :param ip: IP address
     :type ip: Long
+
     :param path: File path
     :type path: String
+
     """
-    
     try:
         context = zmq.Context() 
         socket = context.socket(zmq.REQ)
@@ -50,14 +59,18 @@ def date_handler(obj):
      
        
 def send_open_url(target, ip, url):
-    """ Send open url to target at ip.
-    
+    """
+    Send open url to target at ip.
+
     :param target: The target's wos id.
     :type target: String
+
     :param ip: IP address
     :type ip: Long
+
     :param url: URL
     :type url: String
+
     """
     try:
         context = zmq.Context() 
@@ -73,7 +86,10 @@ def send_open_url(target, ip, url):
  
         
 def awake():
-    """ Sends WakeOnLAN packet to the MAC addresses in MACS. Also, turns on TV's (SHARP IP control).
+    """
+    Sends WakeOnLAN packet to the MAC addresses in MACS.
+    Also, turns on TV's (SHARP IP control).
+
     """
     # send wol packet to the machines
     for mac in MACS:
@@ -97,13 +113,15 @@ def awake():
             
                      
 def snaphot(path):
-    """ Save a snapshot from the IP camera () to project's directory.
-    
+    """
+    Save a snapshot from the IP camera () to project's directory.
+
     :param path: Path to project's directory
     :type path: String
+
      """
     if path:
-        path = os.path.join(PROJECTS_PATH,path[path.find('Projects')+8:])
+        path = os.path.join(PROJECTS_PATH,path[path.find('Projects') + 8:])
         path = os.path.join(path, 'Snapshots').replace('\\', '/')
         try:
             if not os.path.exists(path):
@@ -126,7 +144,7 @@ def snaphot(path):
         
 
 def send_save_audio():
-    """ Send save audio message to responsive node. """
+    """Send save audio message to responsive node."""
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() - timedelta(minutes=2), responsive=1).annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes[0:1]: 
         try:
@@ -142,7 +160,7 @@ def send_save_audio():
     
 
 def send_screenshot():
-    """ Send screenshot message to SCREEN nodes. """
+    """Send screenshot message to SCREEN nodes."""
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() - timedelta(minutes=2), screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes: 
         try:
@@ -158,11 +176,12 @@ def send_screenshot():
     
           
 def send_command(command):
-    """ Send command to SCREEN nodes.
-    
+    """
+    Send command to SCREEN nodes.
+
     :param command: The command to send
     :type command: String
-    
+
     """
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() - timedelta(minutes=2), screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes: 
@@ -179,9 +198,11 @@ def send_command(command):
     
                                    
 def ip_leases():
-    """ Return a list of IP address leases from ASUS RT-N56U router
-    
+    """
+    Return a list of IP address leases from ASUS RT-N56U router
+
     :rtype: list
+
     """
     request = urllib2.Request("http://192.168.1.1/device-map/clients.asp") # HTTP request
     base64string = base64.encodestring('%s:%s' % ('admin', 'wosadmin1')).replace('\n', '') # Encode username and pass 
@@ -197,12 +218,14 @@ def ip_leases():
     
     
 def project_json_generate(dic):
-    """ Generates JSON from dict.
-    
+    """
+    Generates JSON from dict.
+
     :param dic: List of projects as dict instances.
     :type dic: List of dict instances
+
     :rtype: JSON String
-    
+
     """
     json = u"{"
     for key in dic:
@@ -247,13 +270,15 @@ def project_json_generate(dic):
 
           
 def get_event_files(event_id, directory):
-    """ Fetches files related to an event from project's directory.
-    
-    :param event_id: Database row id of an event
+    """
+    Fetches files related to an event from project's directory.
+
+    :param event_id: Database row id of an event.
     :type event_id: Integer
-    :param directory: The project directory:
+
+    :param directory: The project directory.
     :rtype: String
-    
+
     """
     idx = directory.find('Projects') + 9
     if idx == -1:
@@ -268,13 +293,15 @@ def get_event_files(event_id, directory):
 
 
 def event_has_audio(event_id, directory):
-    """ Fetches audio files related to an event from project's directory.
-    
-    :param event_id: Database row id of an event
+    """
+    Fetches audio files related to an event from project's directory.
+
+    :param event_id: Database row id of an event.
     :type event_id: Integer
-    :param directory: The project directory:
+
+    :param directory: The project directory.
     :rtype: JSON String
-    
+
     """
     idx = directory.find('Projects') + 9 
     if idx == -1:
@@ -287,4 +314,3 @@ def event_has_audio(event_id, directory):
     for f in fs:
         json[os.path.splitext(f)[1][1:].encode('utf-8')] = os.path.join('/static/Projects', directory[idx:], f).encode('utf-8').replace('\\', '/')  
     return '[' + str(json).replace("'", '"') + ']'
-

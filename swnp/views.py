@@ -16,18 +16,22 @@ import os
 import urllib
 import json
 
-IP_ADDR = getattr(settings, "IP_ADDR", "192.168.1.10")
-PROJECTS_PATH = getattr(settings, "PROJECTS_PATH", "/")
-SCREEN_IMAGES = getattr(settings, "SCREEN_IMAGES", "/")
-TEMP_DIR = getattr(settings, "TEMP_DIR", "/")
+IP_ADDR = getattr(settings, 'IP_ADDR', '192.168.1.10')
+PROJECTS_PATH = getattr(settings, 'PROJECTS_PATH', '/')
+SCREEN_IMAGES = getattr(settings, 'SCREEN_IMAGES', '/')
+STATIC_PATHS = getattr(settings, 'STATICFILES_DIRS', '/')
+STATIC_PATH = STATIC_PATHS[0]
+TEMP_DIR = getattr(settings, 'TEMP_DIR', '/')
 UNSETTED = False
 
 
 def get_activity():
-    """ Fetches the active activity for PGM_GROUP 1
+    """
+    Fetches the active activity for PGM_GROUP 1
         
-        :rtype Activity: 
-        """
+    :rtype: Activity
+
+    """
     try:
         activity = Activity.objects.filter(active=1).latest('id')
     except Activity.DoesNotExist:
@@ -176,13 +180,21 @@ def nodes(request):
         nodes = Computer.objects.filter(time__gte=datetime.now()-timedelta(seconds=15),screens__gt=0).annotate(dcount=Count('name')).order_by('wos_id')   
         if not nodes:
             Activity.unset_all()  
-        node_list = []   
+        node_list = []
         for node in nodes:
-            path = os.path.join(SCREEN_IMAGES,str(node.wos_id)+'.png')
+            path = STATIC_PATH
+            screens = SCREEN_IMAGES
+            if path.endswith('/') or path.endswith(os.sep):
+                path = path[:len(path) - 1]
+            if screens.startswith('/') or screens.startswith(os.sep):
+                screens = screens[1:]
+            path = path + os.sep + screens + os.sep + str(node.wos_id) + '.png'
+            if os.sep != '/':
+                path = path.replace('/', os.sep)
             if os.path.isfile(path):
-                node_list.append({'node':model_to_dict(node),'img':'/static/screen_images/'+str(node.wos_id)+'.png'})
+                node_list.append({'node':model_to_dict(node),'img': '/static/screen_images/' + str(node.wos_id) + '.png'})
             else:
-                node_list.append({'node':model_to_dict(node),'img':'/static/screen_images/SCREEN.png'})    
+                node_list.append({'node':model_to_dict(node),'img': '/static/screen_images/SCREEN.png'})
         return HttpResponse(json.dumps(node_list,default=utils.date_handler), mimetype='application/json')
     else:
         return HttpResponse(json.dumps({'status':'error'}), mimetype='application/json')
@@ -225,7 +237,7 @@ def openurl(request,computer_id):
         if request.is_ajax() and request.method == 'POST':
             if 'url' in request.POST:
                 url = request.POST['url'].encode('utf-8')
-                utils.send_open_url(str(c.wos_id),c.ip,url)
+                utils.send_open_url(str(c.wos_id), c.ip, url)
                 return HttpResponse('SUCCESS')
         return HttpResponse('ERROR')
 
@@ -246,10 +258,11 @@ def handle_uploaded_file(files,path):
 
 
 def dirlist(request):
-    """ 
+    """
     jQuery File Tree
     Python/Django connector script
     By Martin Skou
+
     """
     r=['<ul class="jqueryFileTree" style="display: none;">']
     try:

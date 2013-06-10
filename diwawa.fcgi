@@ -5,7 +5,9 @@ import sys, os
 #sys.path.insert(0, "/home/user/python")
 
 # Switch to the directory of your project. (Optional.)
-# os.chdir("/home/django/Chimaira")
+# os.chdir("/home/django/diwawa")
+
+print 'Inside diwawa.fcgi'
 
 # Set the DJANGO_SETTINGS_MODULE environment variable.
 os.environ['DJANGO_SETTINGS_MODULE'] = "diwawa.settings"

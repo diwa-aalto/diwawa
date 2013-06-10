@@ -247,7 +247,7 @@ $('#mbprojects').change(
 											$.each(v,function(){
 														var action_time = Date.parse(this.action_time);
 														if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
-															events[events.length-1].content = events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name)+'</p>';
+															events[events.length-1].content = '<p>' + events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name) + '</p>';
 														}else{
 														events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
 														pr_time = action_time.clone();
@@ -311,7 +311,7 @@ function event_content(type,event){
 	switch(type){
 		case 'fileaction':
 		var action_time = Date.parse(event.action_time);
-		output = '<p><img src="/static/img/filetypes/'+getFileExtension(event.file__path)+'.png" style="float:left;"/>'+'<a target="_NEW" href="'+parse_projects_link(event.file__path)+'"><b id="' + event.file__id + '">'+getFileName(event.file__path)+'</a></b><br />'+action_time.toString("HH:mm")+fileaction_icon(event.action__name)+'</p>';
+		output = '<p><img src="/static/img/filetypes/'+getFileExtension(event.file__path)+'.png" style="float:left;"/>'+'<a target="_NEW" href="'+parse_projects_link(event.file__path)+'"><b id="' + event.file__id + '">'+getFileName(event.file__path)+'</b></a><br />'+action_time.toString("HH:mm")+fileaction_icon(event.action__name)+'</p>';
 		break;
 		case 'event':
 		output = '<div class="icons '+event.title.toLowerCase().replace(' ','_')+'"><a href="#" onclick="edit_event_click('+ event.id +')"><b id="' + event.id + '">'+event.title+'</b></a></div>';

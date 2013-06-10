@@ -14,11 +14,11 @@ def custom_login(f):
             for lease in leases:
                 if lease[2] == ip:
                     try:
-                        user,created = User.objects.get_or_create(username=lease[1],first_name=lease[0])
+                        user,created = User.objects.get_or_create(username=lease[1], first_name=lease[0])
                         if created:
                             user.set_password(user.username)
                             user.save()
-                        user = authenticate(username=user.username,password=user.username)
+                        user = authenticate(username=user.username, password=user.username)
                         login(args[0],user)
                     except Exception,e:
                         print str(e)    

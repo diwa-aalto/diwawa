@@ -25,17 +25,24 @@ TEMP_DIR = ""
 # Set to the project root directory
 SITE_ROOT = ""
 
-# Set to the IP address of the server. Used to converted local paths to network paths.
+# Set to the IP address of the server.
+# Used to converted local paths to network paths.
 IP_ADDR = None
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                        # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.mysql',
+        # Or path to database file if using sqlite3.
+        'NAME': '',
+         # Not used with sqlite3.
+        'USER': '',
+        # Not used with sqlite3.
+        'PASSWORD': '',
+        # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': '',
+        # Set to empty string for default. Not used with sqlite3.
+        'PORT': '',
     }
 }
 
@@ -51,11 +58,13 @@ LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
-# For details, see https://docs.djangoproject.com/en/dev/ref/settings/#force-script-name
+# For details, see
+# https://docs.djangoproject.com/en/dev/ref/settings/#force-script-name
 FORCE_SCRIPT_NAME = ''
 
 # The directory to store data temporarily while uploading files. 
-# If None, Django will use the standard temporary directory for the operating system. 
+# If None, Django will use the standard temporary directory for the operating
+# system. 
 # For example, this will default to /tmp on *nix-style operating systems.
 FILE_UPLOAD_TEMP_DIR = None
 
@@ -91,7 +100,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    SITE_ROOT+"/static/",                  
+    SITE_ROOT + '/static/',                  
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -135,19 +144,23 @@ ROOT_URLCONF = 'diwawa.urls'
 WSGI_APPLICATION = 'diwawa.wsgi.application'
 
 TEMPLATE_DIRS = (
-    SITE_ROOT+"/diwawa/templates",             
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    SITE_ROOT + '/diwawa/templates',             
+    # Put strings here, like "/home/html/django_templates"
+    # or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
-TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
-"django.core.context_processors.debug",
-"django.core.context_processors.i18n",
-"django.core.context_processors.media",
-"django.core.context_processors.static",
-"django.core.context_processors.tz",
-"django.contrib.messages.context_processors.messages",
-"django.core.context_processors.request")
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.request'
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -179,8 +192,9 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format' : ('[%(asctime)s] %(levelname)s ' +
+                        '[%(name)s:%(lineno)s] %(message)s'),
+            'datefmt' : '%d/%b/%Y %H:%M:%S'
         },
     },
     'handlers': {
