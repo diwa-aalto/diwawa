@@ -2,6 +2,8 @@ from django import template
 from django.utils.safestring import SafeString
 from swnp.models import ExtendedFlatPage
 register = template.Library()
+
+
 @register.simple_tag
 def show_ordered_flatpages_menu(flatpage_id):
     """ Prints flatpages as li items for navigation
@@ -13,7 +15,7 @@ def show_ordered_flatpages_menu(flatpage_id):
     flatPages = ExtendedFlatPage.objects.all().order_by('show_after')
     myString = ""
     for myPage in flatPages:
-        myString += page_li( myPage, flatpage_id==myPage.id )
+        myString += page_li(myPage, flatpage_id==myPage.id)
     return myString
 
 def page_li( thePage, active ):
@@ -41,4 +43,11 @@ def page_content( thePage ):
         :param thePage: The FlatPage
         :type thePage: :class:`swnp.models.ExtendedFlatPage`
     """
-    return """<section class="frame" id="%s"><div class="page"><div class="page-region"><div class="page-region-content">%s</div></div></div></section>""" % ( thePage.title.lower(),  SafeString(thePage.content) )
+    pstring = ('<section class="frame" id="%s"><div class="page">' +
+               '<div class="page-region">' +
+               '<div class="page-region-content">%s</div>' +
+               '</div></div></section>')
+    title = thePage.title.lower()
+    content = thePage.content
+               
+    return pstring % (title, content)

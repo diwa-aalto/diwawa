@@ -9,9 +9,9 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Computer.responsive'
+        t = 'django.db.models.fields.NullBooleanField'
         db.add_column(u'computer', 'responsive',
-                      self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True),
-                      keep_default=False)
+                      self.gf(t)(null=True, blank=True), keep_default=False)
 
 
         # Changing field 'Computer.ip'

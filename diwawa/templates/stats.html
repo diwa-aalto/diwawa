@@ -12,18 +12,40 @@ $(document).ready(function(){});
 
 <table>
 	<thead>
-		<th>Project</th>
-		<th>Session Count</th>
-		<th>Average Session Duration (s)</th>
-		<th>Min Session Duration (s)</th>
-		<th>Max Session Duration (s)</th>
-		<th>File Count</th>
-		<th>FileAction Count</th>
-		<th>Event Count</th>
+		<th><b>Project</b></th>
+		<th><b>Session Count</b></th>
+		<th><b>Average Session Duration (s)</b></th>
+		<th><b>Min Session Duration (s)</b></th>
+		<th><b>Max Session Duration (s)</b></th>
+		<th><b>File Count</b></th>
+		<th><b>FileAction Count</b></th>
+		<th><b>Event Count</b></th>
 	</thead>
 	<tbody>
 		{%  for p in stats %}
-			<tr><td>{{p.name}}</td><td>{{p.session_count}}</td><td>{{p.session_average_duration}}</td><td>{{p.session_min_duration}}</td><td>{{p.session_max_duration}}</td><td>{{p.file_count}}</td><td>{{p.fileaction_count}}</td><td>{{p.event_count}}</td></tr>
+            {% if p.selected %}
+             <tr>
+                 <td bgcolor="#10E010">{{p.name}}</td>
+                 <td bgcolor="#10E010">{{p.session_count}}</td>
+                 <td bgcolor="#10E010">{{p.session_average_duration}}</td>
+                 <td bgcolor="#10E010">{{p.session_min_duration}}</td>
+                 <td bgcolor="#10E010">{{p.session_max_duration}}</td>
+                 <td bgcolor="#10E010">{{p.file_count}}</td>
+                 <td bgcolor="#10E010">{{p.fileaction_count}}</td>
+                 <td bgcolor="#10E010">{{p.event_count}}</td>
+             </tr>
+			{% else %}
+             <tr>
+                 <td>{{p.name}}</td>
+                 <td>{{p.session_count}}</td>
+                 <td>{{p.session_average_duration}}</td>
+                 <td>{{p.session_min_duration}}</td>
+                 <td>{{p.session_max_duration}}</td>
+                 <td>{{p.file_count}}</td>
+                 <td>{{p.fileaction_count}}</td>
+                 <td>{{p.event_count}}</td>
+             </tr>
+			{% endif %}
 		{% endfor %}
 	</tbody>
 </table>

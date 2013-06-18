@@ -1,9 +1,12 @@
 from django.conf.urls import patterns, include, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.contrib.flatpages.urls import urlpatterns as flat_urlpatterns
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
+
+import sys
 
 urlpatterns = patterns('swnp.views',
     url(r'^$', 'index', name='home'),
@@ -24,10 +27,10 @@ urlpatterns = patterns('swnp.views',
     url(r'^stats/$', 'stats', name='stats'),
     url(r'^event/(?P<event_id>\d+)/edit/$', 'edit_event', name='edit_event'),
     url(r'^chat/', include('jchat.urls')),
-    
+
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    
+
     # Uncomment the next line to enable the admin:
      url(r'^admin/', include(admin.site.urls)),
 )
@@ -35,4 +38,11 @@ urlpatterns = patterns('swnp.views',
 logout_url = url(r'^logout/$', 'django.contrib.auth.views.logout')
 urlpatterns += patterns('', logout_url)
 
-urlpatterns += staticfiles_urlpatterns()
+try:
+    xpatterns = staticfiles_urlpatterns()
+    urlpatterns += xpatterns
+    # xpatterns = flat_urlpatterns
+    # urlpatterns += xpatterns
+    sys.stderr.write('Patterns: ' + str(xpatterns) + '\n')
+except Exception, e:
+    sys.stderr.write('Exception: %s\n' % str(e))

@@ -7,7 +7,8 @@ import base64
 import urllib2
 import datetime
 import os
-from models import *
+import sys
+from models import Company, Computer
 from django.db.models import Count
 from datetime import timedelta
 from django.conf import settings
@@ -16,10 +17,10 @@ from django.conf import settings
 IP_ADDR = getattr(settings, 'IP_ADDR', '')
 MACS = getattr(settings, 'MACS', [])
 PROJECTS_PATH = getattr(settings, 'PROJECTS_PATH', '/')
-CAMERA_USERNAME = ''
-CAMERA_PASSWORD = ''
-ROUTER_USERNAME = ''
-ROUTER_PASSWORD = ''
+CAMERA_USERNAME = getattr(settings, 'CAMERA_USER', '')
+CAMERA_PASSWORD = getattr(settings, 'CAMERA_PASSWORD', '')
+ROUTER_USERNAME = getattr(settings, 'ROUTER_USER', '')
+ROUTER_PASSWORD = getattr(settings, 'ROUTER_PASSWORD', '')
 
 # Diwa TVs,port numbers and commands for SHARP 60LE636 IP control
 TVS = [('192.168.1.100', 10002),
@@ -88,6 +89,28 @@ def send_open_url(target, ip, url):
         context.term()          
     except Exception, e:
         pass
+
+def send_chat_message(sendername, msg):
+    nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
+                                    timedelta(minutes=2), screens__gt=0)
+    nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
+    for node in nodes:
+        try:
+            context = zmq.Context() 
+            socket = context.socket(zmq.REQ)
+            socket.setsockopt(zmq.LINGER, 10)
+            node_ip = iptools.long2ip(int(node.ip))
+            sys.stderr.write('SENDING MESSAGE TO: %s\n' % str(node_ip))
+            sys.stderr.flush()
+            socket.connect('tcp://' + node_ip + ':5555')
+            if sendername and msg:
+                socket.send('chatmsg;' + str(node.id) + ';' +
+                            str(sendername) + ':' + str(msg))       
+            socket.close()
+            context.term()     
+        except Exception, e:
+            sys.stderr.write('EXCEPTION: %s\n' % str(e))
+            sys.stderr.flush()
  
         
 def awake():
@@ -115,8 +138,8 @@ def awake():
             s.close()
         except Exception, e:
             pass  
-            
-                     
+
+
 def snaphot(path):
     """
     Save a snapshot from the IP camera () to project's directory.
@@ -302,13 +325,17 @@ def get_event_files(event_id, directory):
     :rtype: String
 
     """
-    idx = directory.find('Projects') + 9
+    idx = directory.find('Projects')
     if idx == -1:
-        return '[]'		
-    directory = os.path.join(PROJECTS_PATH, directory[idx:]).replace('\\', '/')
-    idx = directory.find('Projects') + 9
-    os.chdir(directory)
-    fs = glob.glob("*/%s_*" % (event_id))
+        return '[]'
+    idx += 9
+    dirn = os.path.join(PROJECTS_PATH, directory[idx:])
+    dirn = dirn.replace('/', os.sep).replace('\\', os.sep)
+    # idx = dirn.find('Projects') + 9
+    if os.name == 'nt':
+        dirn = r'\\' + dirn
+    os.chdir(dirn)
+    fs = glob.glob("*%s%s_*" % (os.sep, event_id))
     out = []
     for f in fs:
         v = os.path.join('/static/Projects', directory[idx:], f)
@@ -332,13 +359,16 @@ def event_has_audio(event_id, directory):
     :rtype: JSON String
 
     """
-    idx = directory.find('Projects') + 9 
+    idx = directory.find('Projects')
     if idx == -1:
-        return '[]'        
-    directory = os.path.join(PROJECTS_PATH, directory[idx:]).replace('\\', '/')
-    idx = directory.find('Projects') + 9
-    os.chdir(directory)
-    fs = glob.glob("Audio/%s_*" % (event_id))
+        return '[]'
+    idx += 9
+    dirn = os.path.join(PROJECTS_PATH, directory[idx:])
+    dirn = dirn.replace('/', os.sep).replace('\\', os.sep)
+    if os.name == 'nt':
+        dirn = r'\\' + dirn
+    os.chdir(dirn)
+    fs = glob.glob("Audio%s%s_*" % (os.sep, event_id))
     json = {}
     for f in fs:
         item = os.path.join('/static/Projects', directory[idx:], f)

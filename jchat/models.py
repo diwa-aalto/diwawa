@@ -61,7 +61,7 @@ class Room(models.Model):
         m.save()
         return m
     
-    def say(self, sender,user, message):
+    def say(self, sender, user, message):
         '''Say something in to the chat room'''
         if message.startswith('/'):
             return self.command(sender, message)
@@ -70,6 +70,7 @@ class Room(models.Model):
     def join(self, sender,user):
         '''A user has joined'''
         return self.__add_message('j', sender,user)
+
     def command(self,user, message):
         '''User has sent a command'''
         self.__add_message('c', user, message)
@@ -83,6 +84,7 @@ class Room(models.Model):
                     tags.add(name)
             self.__add_message('s','System', ' '.join(tags))        
         return
+
     def leave(self, sender,user):
         '''A user has leaved'''
         return self.__add_message('l', sender,user)

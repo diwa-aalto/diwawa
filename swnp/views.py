@@ -2,7 +2,8 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 from django.template import RequestContext
-from models import Activity, Project, Session, Event, Fileaction, Computer, File
+from models import (Activity, Project, Session, Event, Fileaction, Computer,
+                    File)
 from django.db.models import Count, F, Q
 from datetime import datetime, timedelta
 from jchat.models import Room
@@ -13,6 +14,7 @@ from django.contrib import messages
 from django.conf import settings
 import utils
 import os
+import sys
 import urllib
 import json
 
@@ -28,7 +30,7 @@ UNSETTED = False
 def get_activity():
     """
     Fetches the active activity for PGM_GROUP 1
-        
+    
     :rtype: Activity
 
     """
@@ -43,29 +45,67 @@ def get_activity():
 @csrf_protect
 def index(request):
     activity = get_activity()
+    activeProject = None
     if activity:
-        room = Room.objects.get_or_create(activity.project)
+        activeProject = activity.project
+        room = Room.objects.get_or_create(activeProject)
     else:    
         room = None
         
     if 'tab' in request.REQUEST:
         tab = request.REQUEST['tab']
     else:
-        tab = "diwaweb"    
-            
-    projects = Project.objects.filter(company__id=1).order_by('name')           
-    return render_to_response("metro.html", {'activity':activity,'tab':tab,'nodes':nodes,'chat_id':room.id if room else None,'projects':projects}, context_instance=RequestContext(request))
+        tab = 'diwaweb'
+
+    projects = []
+    for p in Project.objects.filter(company__id=1).order_by('name'):
+        if (activeProject) and (p.id == activeProject.id):
+            projects.append(p)
+            continue
+        if (p.password == None) or (len(p.password) < 1):
+            projects.append(p)
+    result = None
+    try:
+        result = render_to_response(
+               "metro.html",
+                   {'activity': activity,
+                    'tab': tab,
+                    'nodes': nodes,
+                    'chat_id': room.id if room else None,
+                    'projects': projects
+                    },
+                context_instance=RequestContext(request)
+            )
+    except Exception, e:
+        raise e
+    return result
 
 
 @custom_login   
 @csrf_protect
 def diwamb(request):
-    projects = Project.objects.filter(company__id=1).order_by('name')
-    activity = get_activity() 
-    return render_to_response('meetingbrowser.html', {'projects':projects,'activity':activity,'tab':'diwamb'}, context_instance=RequestContext(request))
+    activeProject = None
+    activity = get_activity()
+    if activity:
+        activeProject = activity.project
+    projects = []
+    for p in Project.objects.filter(company__id=1).order_by('name'):
+        if (activeProject) and (p.id == activeProject.id):
+            projects.append(p)
+            continue
+        if (p.password == None) or (len(p.password) < 1):
+            projects.append(p)
+    return render_to_response(
+              'meetingbrowser.html',
+                  {'projects': projects,
+                   'activity': activity,
+                   'tab': 'diwamb'
+                   },
+               context_instance=RequestContext(request)
+    )
 
 
-def project_json(request,project_id):
+def project_json(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
@@ -103,8 +143,21 @@ def has_audio(request):
 
 @csrf_protect
 def projects_json(request):
-    projects = [model_to_dict(project) for project in Project.objects.all()]
-    return HttpResponse(json.dumps(projects,default=utils.date_handler), mimetype='application/json')
+    activeProject = None
+    activity = get_activity()
+    if activity:
+        activeProject = activity.project
+    projects = []
+    for p in Project.objects.filter(company__id=1).order_by('name'):
+        if (activeProject) and (p.id == activeProject.id):
+            projects.append(model_to_dict(p))
+            continue
+        if (p.password == None) or (len(p.password) < 1):
+            projects.append(model_to_dict(p))
+    # sys.stderr.write('My projects: ' + str([p for p in projects]) + '\n')
+    # sys.stderr.flush()
+    return HttpResponse(json.dumps(projects, default=utils.date_handler),
+                        mimetype='application/json')
 
     
 @csrf_protect
@@ -201,7 +254,7 @@ def nodes(request):
 
 
 @csrf_protect
-def upload(request,computer_id):
+def upload(request, computer_id):
     path = TEMP_DIR
     try:
         activity = Activity.objects.filter(active=True).latest('id')
@@ -210,7 +263,7 @@ def upload(request,computer_id):
         pass 
     try:
         if int(computer_id):
-            c = Computer.objects.get(pk=computer_id)	
+            c = Computer.objects.get(pk=computer_id)
         if request.is_ajax() and request.method == 'POST':
             uploaded_path = None
             if 'file' in request.POST:
@@ -220,13 +273,12 @@ def upload(request,computer_id):
                 # We are uploading files
                 uploaded_path = handle_uploaded_file(request.FILES,path)
                 send_path = [w.replace(PROJECTS_PATH[:PROJECTS_PATH.find('Projects')],'\\\\'+IP_ADDR).replace('/','\\') for w in uploaded_path]
-                
-            if c:    	         
+            if c:
                 if 'file' in request.POST and IP_ADDR != "127.0.0.1":
                     send_path = [w.replace(PROJECTS_PATH[:PROJECTS_PATH.find('Projects')],'\\\\'+IP_ADDR).replace('/','\\') for w in send_path]
                 utils.send_open_path(str(c.wos_id),c.ip,send_path)
                 return HttpResponse('SUCCESS')
-    except Exception:
+    except:
         pass
     return HttpResponse('ERROR')
     
@@ -264,16 +316,19 @@ def dirlist(request):
     By Martin Skou
 
     """
-    r=['<ul class="jqueryFileTree" style="display: none;">']
+    r = ['<ul class="jqueryFileTree" style="display: none;">']
     try:
-        r=['<ul class="jqueryFileTree" style="display: none;">']
-        d=urllib.unquote(request.POST.get('dir',TEMP_DIR)) 
+        r = ['<ul class="jqueryFileTree" style="display: none;">']
+        d = urllib.unquote(request.POST.get('dir', TEMP_DIR))
         da = d[d.rfind("\\"):]
         while da.startswith("\\") or da.startswith("/"):
             da = da[1:]
-        d = unicode(os.path.join(PROJECTS_PATH,d[d.find('Projects')+9:]).replace('\\','/'))
+        d = unicode(os.path.join(PROJECTS_PATH, d[d.find('Projects') + 9:]))
+        d = d.replace('\\', os.sep).replace('/', os.sep)
+        if os.name == 'nt':
+            d = r'\\' + d
         for f in os.listdir(d):
-            ff=os.path.join(d,f).replace('\\','/')
+            ff = os.path.join(d, f)
             if os.path.isdir(ff):
                 r.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (ff,f))
             else:
@@ -281,7 +336,7 @@ def dirlist(request):
                 r.append('<li class="file ext_%s"><a href="#" rel="%s" draggable="true" ondragstart="drag(event)">%s</a></li>' % (e,ff,f))
         r.append('</ul>')
     except Exception,e:
-        r.append('Could not load directory(%s): %s' % (d,str(e)))
+        r.append('Could not load directory(%s): %s' % (d, str(e)))
     r.append('</ul>')
     return HttpResponse(''.join(r))
 
@@ -338,13 +393,60 @@ def edit_event(request,event_id):
 @csrf_protect
 def stats(request):
     stats = []
-    projects = Project.objects.all()
+    activeProject = None
+    activity = get_activity()
+    if activity:
+        activeProject = activity.project
+    projects = Project.objects.filter(company__id=1).order_by('name')
     for p in projects:
-        sessions = Session.objects.filter(project=p, endtime__gt=F('starttime')+timedelta(minutes=3))
+        isCurrent = (activeProject != None) and (p.id == activeProject.id)
+        # If this is NOT the currently selected project...
+        if (not isCurrent) or (not activeProject):
+            # If this project is password protected, skip it.
+            if (p.password != None) and (len(p.password) > 0):
+                continue
+        sessions = Session.objects.filter(project=p,
+                                          endtime__gt=F('starttime') +
+                                          timedelta(minutes=3))
         files = File.objects.filter(project=p)
         fileactions = Fileaction.objects.filter(file__in=files)
         events = Event.objects.filter(session__in=sessions)
-        sessions = sessions.extra(select={'dur':"SUM(TIMESTAMPDIFF(SECOND,starttime,endtime))/count(*)",'min':"MIN(TIMESTAMPDIFF(SECOND,starttime,endtime))",'max':"MAX(TIMESTAMPDIFF(SECOND,starttime,endtime))", 'count':"COUNT(*)"}).values_list('dur','min','max', 'count').get()      
-        stats.append({'name':p.name, 'session_average_duration':int(sessions[0]) if sessions[0] is not None else 0,'session_min_duration':int(sessions[1]) if sessions[1] is not None else 0,'session_max_duration':int(sessions[2]) if sessions[2] is not None else 0,'session_count':sessions[3],'file_count':files.count(), 'fileaction_count':fileactions.count(), 'event_count':events.count()})
-    return render_to_response("stats.html", {'stats':stats,'tab':'stats'}, context_instance=RequestContext(request))
+        sQuery = {
+            'dur': 'SUM(TIMESTAMPDIFF(SECOND, starttime, endtime)) / COUNT(*)',
+            'min': 'MIN(TIMESTAMPDIFF(SECOND, starttime, endtime))',
+            'max': 'MAX(TIMESTAMPDIFF(SECOND, starttime, endtime))',
+            'count': 'COUNT(*)'
+        }
+        sessions = sessions.extra(select=sQuery)
+        sessions = sessions.values_list('dur', 'min', 'max', 'count').get()
+        session_average_duration = 0
+        session_min_duration = 0
+        session_max_duration = 0
+        if sessions[0] is not None:
+            session_average_duration = int(sessions[0])
+        if sessions[1] is not None:
+            session_min_duration = int(sessions[1])
+        if sessions[2] is not None:
+            session_max_duration = int(sessions[2])
+        session_count = sessions[3]
+        statsdata = {
+            'selected': isCurrent,
+            'name': p.name,
+            'session_average_duration': session_average_duration,
+            'session_min_duration': session_min_duration,
+            'session_max_duration': session_max_duration,
+            'session_count': session_count,
+            'file_count': files.count(),
+            'fileaction_count': fileactions.count(),
+            'event_count': events.count()
+        }
+        stats.append(statsdata)
+    return render_to_response(
+                              'stats.html',
+                              {
+                                  'stats': stats,
+                                  'tab': 'stats'
+                              },
+                              context_instance=RequestContext(request)
+                              )
 

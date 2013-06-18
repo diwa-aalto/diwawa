@@ -12,6 +12,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User 
 from models import Room, Message
 from swnp.decorators import custom_login
+from swnp.utils import send_chat_message
 
 @custom_login
 def send(request):
@@ -24,7 +25,8 @@ def send(request):
         user = request.COOKIES['dchat_name']
         p = request.POST
         r = Room.objects.get(id=int(p['chat_room_id']))
-        r.say(user, request.user,p['message'])
+        r.say(user, request.user, p['message'])
+        send_chat_message(user, p['message'])
     return HttpResponse('')
 
 @custom_login
@@ -153,5 +155,6 @@ def jsonify(object, fields=None, to_dict=False):
         return out
     else:
         return json.dumps(out,default=date_handler)
+
 def date_handler(obj):
-    return obj.isoformat() if hasattr(obj, 'isoformat') else obj   
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
