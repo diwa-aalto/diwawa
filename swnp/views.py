@@ -371,7 +371,7 @@ class EventForm(forms.ModelForm):
     desc = forms.CharField(widget=forms.Textarea)
     class Meta:
         model = Event
-        fields = ['title']         
+        fields = ['title']
 
 
 @csrf_protect
@@ -392,6 +392,16 @@ def edit_event(request,event_id):
 
 @csrf_protect
 def stats(request):
+    """
+    Creates statistics listing of the projects.
+
+    The project list does not contain password protected projects,
+    except if one is currently on.
+
+    The sessions list is filtered out of sessions whose duration is less
+    than or equal to 3 minutes.
+
+    """
     stats = []
     activeProject = None
     activity = get_activity()
@@ -412,13 +422,13 @@ def stats(request):
         fileactions = Fileaction.objects.filter(file__in=files)
         events = Event.objects.filter(session__in=sessions)
         sQuery = {
-            'dur': 'SUM(TIMESTAMPDIFF(SECOND, starttime, endtime)) / COUNT(*)',
+            'avg': 'SUM(TIMESTAMPDIFF(SECOND, starttime, endtime)) / COUNT(*)',
             'min': 'MIN(TIMESTAMPDIFF(SECOND, starttime, endtime))',
             'max': 'MAX(TIMESTAMPDIFF(SECOND, starttime, endtime))',
             'count': 'COUNT(*)'
         }
         sessions = sessions.extra(select=sQuery)
-        sessions = sessions.values_list('dur', 'min', 'max', 'count').get()
+        sessions = sessions.values_list('avg', 'min', 'max', 'count').get()
         session_average_duration = 0
         session_min_duration = 0
         session_max_duration = 0

@@ -72,25 +72,49 @@
 		}
 	</style>
 	<script type="text/javascript">
-		function getFileExtension(filename){
-			return filename.split('.').pop();
-		}
-		function path_to_localhost(path){
-			if(path.indexOf("C:")>=0){
-				url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
-				return url;
-			}
-			return path;
-		}
-		function getFileName(filepath){
-			return filepath.replace(/^.*[\\\/]/, '');
-		}
-		function getDocHeight() {
-   			var db = document.body;
-			var dde = document.documentElement;
-			var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
-			return docHeight;
-		}
+
+
+	   function getFileName(filepath) {
+            return filepath.replace(/^.*[\\\/]/, '');
+        }
+
+
+        function getFileExtension(filename)
+        {
+            var mysplit = filename.split('.');
+            if (mysplit.length > 1) {
+                var lastElement = mysplit.pop();
+                return lastElement.toLowerCase();
+            }
+            return '';
+        }
+
+
+        // NOTE: This function is probably not used anymore...
+        function path_to_localhost(path) {
+            if (path.indexOf('C:') >= 0) {
+                url = path.replace(/C:\\Projects\\/g, 'http://localhost/');
+                url = url.replace(/\\/g, '/');
+                console.log(url);
+                return url;
+            }
+            return path;
+        }
+
+
+        function getDocHeight() {
+            var db = document.body;
+            var dde = document.documentElement;
+            var docHeight = Math.max(db.scrollHeight,
+                                     dde.scrollHeight,
+                                     db.offsetHeight,
+                                     dde.offsetHeight,
+                                     db.clientHeight,
+                                     dde.clientHeight);
+            return docHeight;
+        }
+
+
 		$(document).ready(function(){ 
 			$('div.navigation-bar-inner ul').each(function(){
 			    // For each set of tabs, we want to keep track of
@@ -133,7 +157,11 @@
 	    		window.location.href = '/static/dl/DiwaCS-setup-0.8.7.exe';
 			});
 		});
-	{% block javascript %}{% endblock %}
+
+
+	{% block javascript %}
+	{% endblock %}
+
 	</script>	
 </head>  
 {% load pages %}

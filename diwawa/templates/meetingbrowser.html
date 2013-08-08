@@ -2,373 +2,543 @@
 {% block javascript %}
 
 
-var jplayer; 
+var jplayer;
 var mbproject = 0;
 var timeline;
 var data;
 var audio_files = Array();
-var jplayer_active=0;
+var jplayer_active = 0;
+
+
 function onselect(event) {
 	var sel = timeline.getSelection();
-  	if (sel.length) {
-    	if (sel[0].row != undefined) {
-      		var row = sel[0].row;
-      		var item = timeline.getItem(row);
-      		$("div#snapshot").empty();
-      		$("div#screenshots").empty();
-      		jplayer.jPlayer("clearMedia");
-		 $('.pause').hide();
-		$('.play').show();
+    var selcount = sel.length;
 
-      		$('#row'+row).addClass("selected-row");
-      		if(item.end != undefined){
+  	for (var i = 0; i < selcount; i++) {
+  	    var row = sel[i].row;
+  	    console.log('Selected: ' + row);
+    	if (row != undefined) {
+      		var item = timeline.getItem(row);
+      		$('div#snapshot').empty();
+      		$('div#screenshots').empty();
+      		jplayer.jPlayer('clearMedia');
+		    $('.pause').hide();
+		    $('.play').show();
+      		$('#row' + row).addClass('selected-row');
+
+      		if (item.end != undefined) {
       			timeline.setVisibleChartRange(item.start, item.end);
-      			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(2).html()).trigger('keyup');
-      		}else{
-      			$('#event_search').val('').trigger('keyup').val($('#row'+row).addClass("selected-row").children('td').eq(1).html()).trigger('keyup');
-      			$.getJSON('/event_files/',{'event_id':$(".timeline-event-selected > div > div > a > b").attr('id')},function(data){  		
-      			var audio = {};
-      			$.each(data,function(key,val){
-      				console.log(key+':'+val);
-      				if (val.indexOf("Snapshots") >= 0){
-      					$("div#snapshot").append('<a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title=""><img src="'+path_to_localhost(val)+'"/></a>');
-      				}else if(val.indexOf("Screenshots") >= 0){
-      					$("div#screenshots").append('<div><a class="fancybox" href="'+path_to_localhost(val)+'" data-fancybox-group="gallery" title=""><img src="'+path_to_localhost(val)+'"/></a></div>');
-      				}else if(val.indexOf("Audio") >= 0){
-      					audio[val.substring(val.lastIndexOf('.')+1)] = val;
-      				}
-      				});
-      				//jplayer.jPlayer("setMedia",audio);
-      			});
+      			var mykeyup = $('#event_search').val('').trigger('keyup');
+      			var srow = $('#row' + row).addClass('selected-row');
+      			var myhtml = srow.children('td').eq(2).html();
+      			mykeyup.val(myhtml).trigger('keyup');
+      		} else {
+      		    var mykeyup = $('#event_search').val('').trigger('keyup');
+      		    var srow = $('#row' + row).addClass('selected-row');
+      		    var myhtml = srow.children('td').eq(1).html();
+      			mykeyup.val(srow).trigger('keyup');
+      			var eid = $('.timeline-event-selected > div > div > a > b');
+      			var eQuery = {'event_id': eid.attr('id')};
+
+                var dataFunction = function(data) {
+                    var audio = {};
+                    var keyval = function(key, val) {
+                        console.log(key + ': ' + val);
+                        if (val.indexOf('Snapshots') >= 0) {
+                            var snap = $('div#snapshot');
+                            snap.append('<div><a class="fancybox" href="' +
+                                path_to_localhost(val) + '" ' +
+                                'data-fancybox-group="gallery" title="">' +
+                                '<img src="' + path_to_localhost(val) + '"/>' +
+                                '</a></div>');
+                        } else if(val.indexOf('Screenshots') >= 0) {
+                            var screenshot = $('div#screenshots');
+                            screenshot.append('<div><a class="fancybox" ' +
+                                'href="' + path_to_localhost(val) + '" ' +
+                                'data-fancybox-group="gallery" title="">' +
+                                '<img src="' + path_to_localhost(val) +
+                                '"/></a></div>');
+                        } else if(val.indexOf('Audio') >= 0) {
+                            var aIndex = val.lastIndexOf('.');
+                            aIndex += 1;
+                            var aVal = val.substring(aIndex);
+                            audio[aVal] = val;
+                        }
+                    };
+                    $.each(data, keyval);
+                    //jplayer.jPlayer("setMedia",audio);
+                };
+
+      			$.getJSON('/event_files/', eQuery, dataFunction);
       		}
     	}
+    // end for sel.length
 	}
-	else
-	{
-  		$(".selected-row").removeClass('selected-row');
+	if (selcount == 0) {
+  		$('.selected-row').removeClass('selected-row');
   		$('#event_search').val('').trigger('keyup');
-  		$("div#snapshot").empty();
-      		$("div#screenshots").empty();
-      		jplayer.jPlayer("clearMedia");
-              $('.pause').hide();
+  		$('div#snapshot').empty();
+        $('div#screenshots').empty();
+      	jplayer.jPlayer('clearMedia');
+        $('.pause').hide();
 		$('.play').show();
   	}
 }
+// end of onselect
 
-function initTimeline(data){
+
+function initTimeline(data) {
 	var height = $(parent).height() - $('header').outerHeight() - 300;
-	// $(window).height()-$('header').outerHeight()-40;       	
+	// $(window).height()-$('header').outerHeight()-40;
+
 	// specify options
 	var options = {
-		'width':  '100%',
-	    'height': height+'px',
+		'width': '100%',
+	    'height': height + 'px',
 	    'editable': false,
 	    'style': 'box',
-		'axisOnTop':true,
-		'intervalMax':2628000000,
-		'intervalMin':300000,
-		showNavigation:true
+		'axisOnTop': true,
+		'intervalMax': 2628000000,
+		'intervalMin': 300000,
+		'showNavigation': true
 	};
 
 	// Instantiate our timeline object.
 	timeline = new links.Timeline(document.getElementById('mytimeline'));
 
 	// Draw our timeline with the created data and options
-	timeline.draw(data, options);	
+	timeline.draw(data, options);
 	links.events.addListener(timeline, 'select', onselect);
 }
 
-function getFileExtension(filename){
-	return filename.split('.').pop().toLowerCase();
-}
-
-function path_to_localhost(path){
-	if(path.indexOf("C:")>=0){
-		url = path.replace(/C:\\Projects\\/g,"http://localhost/").replace(/\\/g,"/");
-		console.log(url);
-		return url;
-	}
-	return path;
-}
 
 function isEmpty(map) {
-   for(var key in map) {
-      if (map.hasOwnProperty(key)) {
-         return false;
-   	}
-   }
-   return true;
-}
-
-function getFileName(filepath){
-	return filepath.replace(/^.*[\\\/]/, '');
-}
-
-function getDocHeight() {
-   	var db = document.body;
-	var dde = document.documentElement;
-	var docHeight = Math.max(db.scrollHeight, dde.scrollHeight, db.offsetHeight, dde.offsetHeight, db.clientHeight, dde.clientHeight);
-	return docHeight;
-}
-
-$(document).ready(function(){
-	jplayer = $('#jquery_jplayer_1').jPlayer({
-		swfPath: "/static/js",
-		supplied: "wav",
-		cssSelectorAncestor: "",
-		cssSelectors: {
-			videoPlay: "",
-			play: "#play",
-        	pause: "#pause",
-        	stop: "#stop",
-        	mute: "#mute",
-        	unmute: "#unmute",
-        	currentTime: "#currentTime",
-        	duration: "#duration"
-		},
-		wmode: "window"
-		});
-		$("#edit_event_link").hide();
-		$("#edit_event_link").fancybox({
-			'scrolling'		: 'no',
-    helpers : {
-    title	: {type: 'outside'},
-    overlay : {
-    	css : {'background' : 'rgba(58, 42, 45, 0.95)'}
-        }
+    for (var key in map) {
+        if (map.hasOwnProperty(key)) {
+            return false;
+   	    }
     }
-});
-
-$(document).on('click','.play',function(event){
-	var parent = $(this).closest('tr');
-	if (jplayer_active != parent.attr('event')){
-		$('.pause').hide();
-		$('.play').show();
-		jplayer.jPlayer("clearMedia");
-		jplayer_active=parent.attr('event');	
-	}
-	if(parent.hasClass('selected-row')){
-		event.stopPropagation();
-	}
-	if (isEmpty($('#jquery_jplayer_1').data("jPlayer").status.media)){	
-	jplayer.jPlayer("setMedia",audio_files[parent.attr('event')]);
-	}
-	jplayer.jPlayer("play");
-	$(this).hide();
-	$(this).next().show();
-	
-});
-
-$(document).on('click','.pause',function(event){
-	event.stopPropagation();
-	var parent = $(this).closest('tr');
-	jplayer.jPlayer("pause");
-	$(this).hide();
-	$(this).prev().show();
-});
-
-$(document).on('click','#all_events tr',function(){
-	var start = $(this).attr('start');
-	var end = ($(this).attr('end') != '' ? $(this).attr('end') : '');
-	if (end == ''){
-		start = Date.parse($(this).attr('start').substring(0,19)).add(-3).minute();
-		end = new Date(start.getTime()).add(6).minute().toString('yyyy-MM-ddTHH:mm:ss');
-		start = start.toString('yyyy-MM-ddTHH:mm:ss');
-	}
-	//timeline.setVisibleChartRange(start,end );
-	timeline.setSelection([{row: eval($(this).attr('id').substring(3))}]);
-	$("selected-row").removeClass("selected-row");
-	onselect();
-	$(this).addClass("selected-row");
-});
-
-// Write on keyup event of search input element
-$("#event_search").keyup(function(){
-	$("#all_events").dataTable().fnFilter( $(this).val() );
-	if($(this).val() == ''){
-		$(".selected-row").removeClass('selected-row');
-	}
-});
-$('.fancybox').fancybox({
-    helpers : {
-    title	: {type: 'outside'},
-	thumbs	: {
-				width	: 50,
-				height	: 50
-			},
-    overlay : {
-    	css : {'background' : 'rgba(58, 42, 45, 0.95)'}
-        }
-    }
-});
-$('div#loading').hide();
-$("#event_search").next().click(function(){$('#event_search').val('').trigger('keyup');});
-
-function eventobject(id,type, start, end, title, content, hasAudio){
-	this.id = id;
-	this.type = type;
-	this.start = start;
-	this.end = end;
-	this.title = title;
-	this.content = content;	
-	this.hasAudio=hasAudio;
+    return true;
 }
 
 
-$('#mbprojects').change(
-	function(){
-		if(mbproject != $(this).attr('id')){
-			$('#event_search').val('').trigger('keyup');
-  			$("div#snapshot").empty();
-      		$("div#screenshots").empty();
-      		jplayer.jPlayer("clearMedia");
-			mbproject = $('#mbprojects option:selected').attr('id');
-			console.log('selected id ='+mbproject);
-			$('#panel_handle').click();
-			$('#mytimeline').empty();
-			$('div#loading').show();
-			$('table#all_events tbody').empty();
-			$("#all_events").dataTable().fnClearTable();
-			$.ajax({
-    			type: "GET",
-   			 	url: '/projects/'+mbproject+'/',
-    			contentType: "application/json; charset=utf-8",
-    			dataType: "json",
-    			success: function(data){
-					jsondata = data;
-					var events = new Array();
-					var pr_time, pr_file;
-					$.each(data,function(k,v){
-						var start, end, name;				
-						switch(k){
-							case 'sessions':
-											$.each(v,function(){
-													pr_time = null;
-													pr_file = '';
-													events.push(new eventobject(this.id,'Session',Date.parse(this.starttime),( this.end =! "" ? Date.parse(this.endtime) : null),'','<i class="icon-clock"></i>'));
-													});
-													break;
-							case 'fileactions':
-											$.each(v,function(){
-														var action_time = Date.parse(this.action_time);
-														if(pr_time != null && pr_time != undefined && pr_file != undefined && pr_file != '' && Date.equals(pr_time,action_time) && pr_file == this.file__path){
-															events[events.length-1].content = '<p>' + events[this.id,events.length-1].content.substring(0,events[events.length-1].content.length-4)+fileaction_icon(this.action__name) + '</p>';
-														}else{
-														events.push(new eventobject(this.id,this.action__name,action_time,null,getFileName(this.file__path),event_content('fileaction',this)));
-														pr_time = action_time.clone();
-														pr_file = this.file__path;
-														}
-													});
-													break;
-							case 'events':
-											$.each(v,function(){
-														pr_time = null;
-														pr_file = '';
-														events.push(new eventobject(this.id,'Event',Date.parse(this.time),null,this.title,event_content('event',this)));
-													});
-													break;						
-							default:
-										break;	
-						}
-						if (start == undefined)
-							return true;
-					});
-					events.sort(function(a, b){return a.start > b.start ? 1 : a.start < b.start ? -1 : 0;});	
-					initTimeline(events);
-					$.each(events,function(k,v){ $('table#all_events tbody').append('<tr event="'+v.id+'" id="row'+k+'" start="'+v.start.toString('yyyy-MM-ddTHH:mm:ss')+'" end="'+(v.end != null ? v.end.toString('yyyy-MM-ddTHH:mm:ss') : '')+'" =""><td>'+v.type+'</td><td>'+ v.title +'</td><td>'+v.start.toString('dd.MM.yy HH:mm')+'</td><td>'+(v.end != null ? v.end.toString('dd.MM.yy HH:mm'):"")+'</td><td></td></tr>');if(v.type=='Event'){check_event_audio(v.id,'#row'+k);}});
-					$('#all_events').dataTable( {
-				        "sScrollY": "400px",
-				        "bPaginate": false,
-				        "bScrollCollapse": true,
-				        "bSort": false,
-				        "bInfo": false,
-				        "bDestroy": true,
-				        "sDom": 'lrtp',
-				    } );	
-	    			$('div#loading').hide();
-				},
-			    error: function (xhr, textStatus, errorThrown) {
-			       	console.log(xhr.responseText);
-			       	$('div#loading').hide();
-	    		}
-		});		
-	}
-});
-$('#mbprojects option[id="{% if activity.project %}{{activity.project.id}}{% else %}mb_project_0{% endif %}"]').prop('selected', true);	
-{% if activity.project %}
-	$('#mbprojects').trigger('change');
-{% endif %}
-});
+var onDocumentReady = function() {
+    var playerQuery = {
+        swfPath: '/static/js',
+        supplied: 'wav',
+        cssSelectorAncestor: '',
+        cssSelectors: {
+            videoPlay: '',
+            play: '#play',
+            pause: '#pause',
+            stop: '#stop',
+            mute: '#mute',
+            unmute: '#unmute',
+            currentTime: '#currentTime',
+            duration: '#duration'
+        },
+        wmode: 'window'
+    };
 
-function check_event_audio(event_id, obj_id){
-	$.get('/event_has_audio/',{ event_id:event_id}, function(res) {
-		if (res != '[{}]' && res != 'False'){
-			audio_files[event_id]=eval(res)[0];
+    var boxQuery = {
+        'scrolling': 'no',
+        helpers: {
+            title: {
+                type: 'outside'
+            },
+            overlay: {
+                css: {
+                    'background': 'rgba(58, 42, 45, 0.95)'
+                }
+            }
+        }
+    };
+
+	jplayer = $('#jquery_jplayer_1').jPlayer(playerQuery);
+	$('#edit_event_link').hide();
+	$('#edit_event_link').fancybox(boxQuery);
+
+    var onPlay = function(event) {
+        var parent = $(this).closest('tr');
+        if (jplayer_active != parent.attr('event')) {
+            $('.pause').hide();
+            $('.play').show();
+            jplayer.jPlayer('clearMedia');
+            jplayer_active=parent.attr('event');
+        }
+        if (parent.hasClass('selected-row')) {
+            event.stopPropagation();
+        }
+        if (isEmpty($('#jquery_jplayer_1').data('jPlayer').status.media)) {
+            jplayer.jPlayer('setMedia', audio_files[parent.attr('event')]);
+        }
+        jplayer.jPlayer('play');
+        $(this).hide();
+        $(this).next().show();
+    };
+
+    var onPause = function(event) {
+        event.stopPropagation();
+        var parent = $(this).closest('tr');
+        jplayer.jPlayer('pause');
+        $(this).hide();
+        $(this).prev().show();
+    };
+
+    var onEvents = function() {
+        var start = $(this).attr('start');
+        var end = $(this).attr('end');
+        if (end == '') {
+            var sDate = start.substring(0, 19);
+            start = Date.parse(sDate).add(-3).minute();
+            var eDate = start.getTime();
+            end = Date(eDate).add(6).minute().toString('yyyy-MM-dd HH:mm');
+            start = start.toString('yyyy-MM-dd HH:mm');
+        }
+        // timeline.setVisibleChartRange(start, end);
+        var eObject = {row: eval($(this).attr('id').substring(3))};
+        timeline.setSelection([eObject]);
+        $('selected-row').removeClass('selected-row');
+        onselect();
+        $(this).addClass('selected-row');
+    };
+
+    var onEventSearchKeyup = function() {
+        var myval = $(this).val();
+        $('#all_events').dataTable().fnFilter(myval);
+        if(myval == '') {
+            $('.selected-row').removeClass('selected-row');
+        }
+    };
+
+    var onEventSearchNextClick = function() {
+        $('#event_search').val('').trigger('keyup');
+    };
+
+    $(document).on('click','.play', onPlay);
+
+    $(document).on('click','.pause', onPause);
+
+    $(document).on('click','#all_events tr', onEvents);
+
+    // Write on keyup event of search input element.
+    $('#event_search').keyup(onEventSearchKeyup);
+
+    var fancyBoxObject = {
+        helpers: {
+            title: {
+                type: 'outside'
+            },
+            thumbs: {
+                width: 50,
+                height: 50
+            },
+            overlay: {
+                css: {
+                    'background': 'rgba(58, 42, 45, 0.95)'
+                }
+            }
+        }
+    };
+
+    $('.fancybox').fancybox(fancyBoxObject);
+    $('div#loading').hide();
+    $('#event_search').next().click(onEventSearchNextClick);
+
+    function eventobject(id, type, start, end, title, content, hasAudio) {
+    	this.id = id;
+    	this.type = type;
+    	this.start = start;
+    	this.end = end;
+    	this.title = title;
+    	this.content = content;
+    	this.hasAudio = hasAudio;
+    }
+
+
+    var onProjectChange = function() {
+        if (mbproject != $(this).attr('id')) {
+            $('#event_search').val('').trigger('keyup');
+            $('div#snapshot').empty();
+            $('div#screenshots').empty();
+            jplayer.jPlayer('clearMedia');
+            mbproject = $('#mbprojects option:selected').attr('id');
+            console.log('selected id ='+mbproject);
+            $('#panel_handle').click();
+            $('#mytimeline').empty();
+            $('div#loading').show();
+            $('table#all_events tbody').empty();
+            $('#all_events').dataTable().fnClearTable();
+
+            var aObject = {
+                type: 'GET',
+                url: '/projects/' + mbproject + '/',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function(data) {
+                    jsondata = data;
+                    var events = new Array();
+                    var pr_time, pr_file;
+                    $.each(data, function(k, v) {
+                        var start, end, name;
+                        switch(k) {
+                            case 'sessions':
+                                $.each(v, function() {
+                                    pr_time = null;
+                                    pr_file = '';
+                                    var endDate = null;
+                                    if (this.end != '') {
+                                        endDate = Date.parse(this.endtime);
+                                    }
+                                    var eObj = new eventobject(
+                                        this.id,
+                                        'Session',
+                                        Date.parse(this.starttime),
+                                        endDate,
+                                        '',
+                                        '<i class="icon-clock"></i>'
+                                    );
+                                    events.push(eObj);
+                                });
+                                break;
+                            case 'fileactions':
+                                $.each(v, function() {
+                                    var actionTime = this.action_time;
+                                    actionTime = Date.parse(actionTime);
+                                    var shouldX = (pr_time != null);
+                                    shouldX = shouldX && pr_time != undefined;
+                                    shouldX = shouldX && pr_file != undefined;
+                                    shouldX = shouldX && pr_file != '';
+                                    if (shouldX) {
+                                        var dEquals = Date.equals(pr_time,
+                                                                  actionTime);
+                                        shouldX = shouldX && dEquals;
+                                    }
+                                    var fpath = this.file__path;
+                                    shouldX = shouldX && pr_file == fpath;
+                                    if (shouldX) {
+                                        var lastIndex = events.length - 1;
+                                        var lastEvent = events[lastIndex];
+                                        var eHTML = '<p>';
+                                        var leidc = events[this.id, lastIndex];
+                                        leidc = leidc.content;
+                                        var subLimit = lastEvent.content;
+                                        subLimit = subLimit.lenght - 4;
+                                        eHTML += leidc.substring(0, subLimit);
+                                        var aName = this.action__name;
+                                        eHTML += fileaction_icon(aName);
+                                        eHTML += '</p>';
+                                        lastEvent.content = eHTML;
+                                    } else {
+                                        var eObj = new eventobject(
+                                            this.id,
+                                            this.action__name,
+                                            actionTime,
+                                            null,
+                                            getFileName(this.file__path),
+                                            event_content('fileaction', this)
+                                        );
+                                        events.push(eObj);
+                                        pr_time = actionTime.clone();
+                                        pr_file = this.file__path;
+                                    }
+                                });
+                                break;
+                            case 'events':
+                                $.each(v, function() {
+                                    pr_time = null;
+                                    pr_file = '';
+                                    var eObj = new eventobject(
+                                        this.id,
+                                        'Event',
+                                        Date.parse(this.time),
+                                        null,
+                                        this.title,
+                                        event_content('event', this)
+                                    );
+                                    events.push(eObj);
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                        // TODO: Return what, if start is not undefined?
+                        if (start == undefined) {
+                            return true;
+                        }
+                    });
+                    var sorter = function(a, b) {
+                        if (a.start > b.start) {
+                            return 1;
+                        }
+                        if (a.start < b.start) {
+                            return -1;
+                        }
+                        return 0;
+                    };
+                    events.sort(sorter);
+                    initTimeline(events);
+                    $.each(events, function(k, v) {
+                        var startString = v.start.toString('yyyy-MM-dd HH:mm');
+                        var endString = '';
+                        if (v.end != null) {
+                            endString = v.end.toString('yyyy-MM-dd HH:mm');
+                        }
+                        var toAppend = '<tr event="' + v.id + '" ';
+                        toAppend += 'id="row' + k + '" ';
+                        toAppend += 'start="' + startString + '" ';
+                        toAppend += 'end="' + endString + '" ';
+                        toAppend += '>';
+                        toAppend += '<td>' + v.type + '</td>';
+                        toAppend += '<td>' + v.title +'</td>';
+                        toAppend += '<td>' + startString + '</td>';
+                        toAppend += '<td>' + endString + '</td>';
+                        toAppend += '<td></td>';
+                        toAppend += '</tr>';
+                        $('table#all_events tbody').append(toAppend);
+                        if (v.type=='Event') {
+                            check_event_audio(v.id,'#row' + k);
+                        }
+                    });
+                    $('#all_events').dataTable({
+                        'sScrollY': '400px',
+                        'bPaginate': false,
+                        'bScrollCollapse': true,
+                        'bSort': false,
+                        'bInfo': false,
+                        'bDestroy': true,
+                        'sDom': 'lrtp',
+                    });
+                    $('div#loading').hide();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                    $('div#loading').hide();
+                }
+            };
+            $.ajax(aObject);
+        }
+    };
+
+
+    $('#mbprojects').change(onProjectChange);
+    var option_id = '{% if activity.project %}{{activity.project.id}}' +
+                    '{% else %}mb_project_0{% endif %}';
+    $('#mbprojects option[id="' + option_id + '"]').prop('selected', true);
+    {% if activity.project %}
+    	$('#mbprojects').trigger('change');
+    {% endif %}
+};
+
+$(document).ready(onDocumentReady);
+
+
+// TODO: Might want to refactor this a bit.
+function check_event_audio(event_id, obj_id) {
+	$.get('/event_has_audio/', {'event_id': event_id}, function(res) {
+		if (res != '[{}]' && res != 'False') {
+			audio_files[event_id] = eval(res)[0];
 			console.log(res);
-			$(obj_id+' td:nth-child(5)').html('<a tabindex="1" class="play" href="javascript:;">play</a><a tabindex="1" class="pause" href="javascript:;">pause</a>');			
-			$(obj_id+' a.pause').hide();
+			var myhtml = '<a tabindex="1" class="play" href="javascript:;">' +
+			             'play</a><a tabindex="1" class="pause" ' +
+			             'href="javascript:;">pause</a>';
+			$(obj_id + ' td:nth-child(5)').html(myhtml);
+			$(obj_id + ' a.pause').hide();
 		}
 	});
 }
 
-function event_content(type,event){
-	var output = "";
-	switch(type){
-		case 'fileaction':
-		var action_time = Date.parse(event.action_time);
-		output = '<p><img src="/static/img/filetypes/'+getFileExtension(event.file__path)+'.png" style="float:left;"/>'+'<a target="_NEW" href="'+parse_projects_link(event.file__path)+'"><b id="' + event.file__id + '">'+getFileName(event.file__path)+'</b></a><br />'+action_time.toString("HH:mm")+fileaction_icon(event.action__name)+'</p>';
-		break;
+
+function event_content(type, event) {
+	var output = '';
+	switch(type) {
+        case 'fileaction':
+            var actionTime = Date.parse(event.action_time);
+            var fileName = getFileName(event.file__path);
+    		var fileExtension = getFileExtension(fileName);
+    		if (fileExtension == '') {
+    		    fileExtension = '_blank';
+    		}
+    		var fileIcon = '/static/img/filetypes/' + fileExtension + '.png';
+    		var plink = parse_projects_link(event.file__path);
+    		var style_ = 'float:left;';
+    		var imgDef = 'src="' + fileIcon + '" style="' + style_ + '"';
+    		output = '<p>';
+    		output += '<img ' + imgDef + ' />';
+    		output += '<a target="_NEW" href="' + plink + '">';
+    		output += '<b id="' + event.file__id + '">' + fileName + '</b>';
+    		output += '</a><br />'+ actionTime.toString("HH:mm");
+    		output += fileaction_icon(event.action__name) + '</p>';
+    		break;
+
 		case 'event':
-		output = '<div class="icons '+event.title.toLowerCase().replace(' ','_')+'"><a href="#" onclick="edit_event_click('+ event.id +')"><b id="' + event.id + '">'+event.title+'</b></a></div>';
-		break;
+		    var etitle = event.title.toLowerCase().replace(' ', '_');
+		    var jsclick = 'edit_event_click(' + event.id +')';
+    		output = '<div class="icons ' + etitle + '">';
+    		output += '<a href="#" onclick="' + jsclick + '">';
+    		output += '<b id="' + event.id + '">' + event.title + '</b>';
+    		output += '</a></div>';
+    		break;
 	}
 	return output;
 }
 
-function fileaction_icon(type){
+
+function fileaction_icon(type) {
 	var icon = '';
-	switch(type){
+	switch(type) {
 		case 'Created':
-			icon='<i class="icon-new"></i>';
+			icon = '<i class="icon-new"></i>';
 			break;
 		case 'Updated':
-			icon='<i class="icon-file"></i>';
-			break;	
+			icon = '<i class="icon-file"></i>';
+			break;
 		case 'Removed':
-			icon='<i class="icon-remove"></i>';
+			icon = '<i class="icon-remove"></i>';
 			break;
 		case 'Opened':
-			icon='<i class="icon-book"></i>';
-			break;	
+			icon = '<i class="icon-book"></i>';
+			break;
 		default:
-		icon = type;	
+		    icon = type;
+		    break;
 	}
 	return icon;
 }
 
-// jQuery expression for case-insensitive filter
-$.extend($.expr[":"], 
-{
-    "contains-ci": function(elem, i, match, array) 
-	{
-		return (elem.textContent || elem.innerText || $(elem).text() || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
-	}
-});
 
-function edit_event_click(event_id){
-	$("a#edit_event_link").attr("href", "/event/"+event_id+"/edit/")
+// jQuery expression for case-insensitive filter
+var exprObject = {
+    'contains-ci': function(elem, i, match, array) {
+        var res = (elem.textContent || elem.innerText || $(elem).text() || '');
+        var findthis = (match[3] || '').toLowerCase();
+        return res.toLowerCase().indexOf(findthis) >= 0;
+    }
+};
+
+
+$.extend($.expr[':'], exprObject);
+
+
+function edit_event_click(event_id) {
+	$('a#edit_event_link').attr('href', '/event/' + event_id + '/edit/');
 	$('#edit_event_link').trigger('click');
 	return false;
 }
 
-function parse_projects_link(link){
-	var baseurl = "/static/Projects/";
-	baseurl += link.substr(link.indexOf("Projects")+9)
-	return baseurl.replace(/\\/g,"/");
+
+function parse_projects_link(link) {
+	var baseurl = '/Projects/';
+	baseurl += link.substr(link.indexOf('Projects') + 9);
+	return baseurl.replace(/\\/g, '/');
 }
+
+
 {% endblock %}
 
-{% block pagetitle %}{% endblock %}
+{% block pagetitle %}
+
+{% endblock %}
 
 {% block content %}
 <div class="grid" style="width:100%; height:80%">
@@ -394,7 +564,8 @@ function parse_projects_link(link){
 			<form>
 				<fieldset>
 					<legend>Search</legend>
-					<div class="input-control text" style="width:100%;float:left;margin-right:5px;">
+					<div class="input-control text"
+					 style="width:100%;float:left;margin-right:5px;">
 						<input id="event_search" type="text" />
 						<span class="helper"></span>
 					</div>
@@ -411,7 +582,6 @@ function parse_projects_link(link){
 				    </tr>
 				</thead>
 				<tbody>
-				    
 				</tbody>
 			</table>
 		</div>
