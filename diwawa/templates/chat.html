@@ -63,7 +63,7 @@
 	    	$('#fchat').hide();
 	    {% endif %}
 	    $("#fchat").submit(function() {  
-		    var name =  $("input#name").val();
+		    var name =  unescape(encodeURIComponent($("input#name").val()));
 		    $.cookie('dchat_name',name);
 		    init_chat({{chat_id}}, "chat");
 		    $("#chat-messages-container").resizable({containment: "parent"});

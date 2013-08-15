@@ -4,6 +4,7 @@ Chat application views, some are tests... some are not
 @author: Federico Cáceres <fede.caceres@gmail.com>
 '''
 from datetime import datetime
+import urllib
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
@@ -22,7 +23,7 @@ def send(request):
     message
     '''
     if 'dchat_name' in request.COOKIES:
-        user = request.COOKIES['dchat_name']
+        user = urllib.unquote_plus(request.COOKIES['dchat_name'])
         p = request.POST
         r = Room.objects.get(id=int(p['chat_room_id']))
         r.say(user, request.user, p['message'])
@@ -94,7 +95,7 @@ def join(request):
     message
     '''
     if 'dchat_name' in request.COOKIES:
-        user = request.COOKIES['dchat_name']
+        user = urllib.unquote_plus(request.COOKIES['dchat_name'])
         p = request.POST
         r = Room.objects.get(id=int(p['chat_room_id']))
         r.join(user,request.user)
@@ -110,7 +111,7 @@ def leave(request):
     message
     '''
     if 'dchat_name' in request.COOKIES:
-        user = request.COOKIES['dchat_name']
+        user = urllib.unquote_plus(request.COOKIES['dchat_name'])
         p = request.POST
         r = Room.objects.get(id=int(p['chat_room_id']))
         r.leave(user,request.user)
