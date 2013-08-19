@@ -86,7 +86,8 @@ class Computer(models.Model):
     mac = models.CharField(max_length=12, null=True, blank=True)
     time = models.DateTimeField(null=True, blank=True)
     screens = models.IntegerField(null=True, blank=True)
-    responsive = models.NullBooleanField(null=True, blank=True)
+    responsive = models.SmallIntegerField(null=True, blank=True)
+    pgm_group = models.SmallIntegerField(null=False, blank=False, default=0)
     user = models.ForeignKey(User, null=True, blank=True)
     wos_id = models.IntegerField(null=True, blank=True)
     
@@ -106,7 +107,10 @@ class Event(models.Model):
     
     class Meta:
         db_table = u'event'
-    
+        
+    def __init__(self, title):
+        self.title = title
+        
     def __unicode__(self):
         return str(self.title)   
 
