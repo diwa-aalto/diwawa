@@ -235,12 +235,7 @@ def nodes(request):
             Activity.unset_all()  
         node_list = []
         for node in nodes:
-            path = STATIC_PATH
             screens = SCREEN_IMAGES
-            if path.endswith('/') or path.endswith(os.sep):
-                path = path[:len(path) - 1]
-            if screens.startswith('/') or screens.startswith(os.sep):
-                screens = screens[1:]
             path = screens + os.sep + str(node.wos_id) + '.png'
             if os.sep != '/':
                 path = path.replace('/', os.sep)
