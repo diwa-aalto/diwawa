@@ -123,7 +123,7 @@ def awake():
     for mac in MACS:
         t = iter(mac)
         mac_s = ':'.join(a + b for a, b in zip(t, t))
-        wol.wol(mac_s, broadcast='192.168.1.255')
+        wol.send_magic_packet(mac_s, broadcast='192.168.1.255')
     # turn on the tvs, switch to hdmi1
     for tv in TVS:
         try:
