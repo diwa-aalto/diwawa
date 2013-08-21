@@ -36,7 +36,7 @@ function onselect(event) {
       		    var mykeyup = $('#event_search').val('').trigger('keyup');
       		    var srow = $('#row' + row).addClass('selected-row');
       		    var myhtml = srow.children('td').eq(1).html();
-      			mykeyup.val(srow).trigger('keyup');
+      			mykeyup.val(myhtml.trigger('keyup');
       			var eid = $('.timeline-event-selected > div > div > a > b');
       			var eQuery = {'event_id': eid.attr('id')};
 
