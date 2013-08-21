@@ -108,9 +108,6 @@ class Event(models.Model):
     class Meta:
         db_table = u'event'
         
-    def __init__(self, title):
-        self.title = title
-        
     def __unicode__(self):
         return str(self.title)   
 

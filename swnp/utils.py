@@ -105,7 +105,8 @@ def send_chat_message(sendername, msg):
             socket.connect('tcp://' + node_ip + ':5555')
             if sendername and msg:
                 socket.send('chatmsg;' + str(node.id) + ';' +
-                            base64.b64encode(sendername + ':' + msg))       
+                            base64.b64encode((sendername + ':' + msg).encode(
+                                                                    'utf-8')))       
             socket.close()
             context.term()     
         except Exception, e:

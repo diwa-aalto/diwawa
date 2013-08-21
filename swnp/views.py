@@ -241,7 +241,7 @@ def nodes(request):
                 path = path[:len(path) - 1]
             if screens.startswith('/') or screens.startswith(os.sep):
                 screens = screens[1:]
-            path = path + os.sep + screens + os.sep + str(node.wos_id) + '.png'
+            path = screens + os.sep + str(node.wos_id) + '.png'
             if os.sep != '/':
                 path = path.replace('/', os.sep)
             if os.path.isfile(path):
