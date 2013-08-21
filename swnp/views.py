@@ -247,7 +247,7 @@ def nodes(request):
             if os.path.isfile(path):
                 node_list.append({'node':model_to_dict(node),'img': '/static/screen_images/' + str(node.wos_id) + '.png'})
             else:
-                node_list.append({'node':model_to_dict(node),'img': '/static/screen_images/SCREEN.png'})
+                node_list.append({'node':model_to_dict(node),'img': '/static/img/SCREEN.png'})
         return HttpResponse(json.dumps(node_list,default=utils.date_handler), mimetype='application/json')
     else:
         return HttpResponse(json.dumps({'status':'error'}), mimetype='application/json')
