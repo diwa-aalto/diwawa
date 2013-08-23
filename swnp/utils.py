@@ -12,7 +12,7 @@ from models import Company, Computer
 from django.db.models import Count
 from datetime import timedelta
 from django.conf import settings
-
+import re
 
 IP_ADDR = getattr(settings, 'IP_ADDR', '')
 MACS = getattr(settings, 'MACS', [])
@@ -311,8 +311,9 @@ def project_json_generate(dic):
             json += u"]" 
         json += u","
     json = json[:-1]    
-    json += u"}"       
-    return json    
+    json += u"}"   
+    json = json.replace('\n','\\n').replace('\r','\\r')
+    return json
 
           
 def get_event_files(event_id, directory):
