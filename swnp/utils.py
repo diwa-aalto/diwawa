@@ -51,7 +51,7 @@ def send_open_path(target, ip, path):
         context = zmq.Context() 
         socket = context.socket(zmq.REQ)
         socket.setsockopt(zmq.LINGER, 10)
-        socket.connect('tcp://' + iptools.long2ip(ip) + ':5555')
+        socket.connect('tcp://' + iptools.ipv4.long2ip(ip) + ':5555')
         if target and ip and path:
             socket.send('open;' + target + ';' + str(path))
         socket.close()
@@ -82,7 +82,7 @@ def send_open_url(target, ip, url):
         context = zmq.Context() 
         socket = context.socket(zmq.REQ)
         socket.setsockopt(zmq.LINGER, 10)
-        socket.connect('tcp://' + iptools.long2ip(ip) + ':5555')
+        socket.connect('tcp://' + iptools.ipv4.long2ip(ip) + ':5555')
         if target and ip and url:
             socket.send('url;' + target + ';' + str(url))       
         socket.close()
@@ -99,7 +99,7 @@ def send_chat_message(sendername, msg):
             context = zmq.Context() 
             socket = context.socket(zmq.REQ)
             socket.setsockopt(zmq.LINGER, 10)
-            node_ip = iptools.long2ip(int(node.ip))
+            node_ip = iptools.ipv4.long2ip(int(node.ip))
             sys.stderr.write('SENDING MESSAGE TO: %s\n' % str(node_ip))
             sys.stderr.flush()
             socket.connect('tcp://' + node_ip + ':5555')
@@ -141,7 +141,7 @@ def awake():
             pass  
 
 
-def snaphot(path):
+def snaphot(path, event_id):
     """
     Save a snapshot from the IP camera () to project's directory.
 
@@ -149,7 +149,7 @@ def snaphot(path):
     :type path: String
 
      """
-    if path:
+    if path and event_id:
         path = os.path.join(PROJECTS_PATH,path[path.find('Projects') + 8:])
         path = os.path.join(path, 'Snapshots').replace('\\', '/')
         try:
@@ -165,9 +165,8 @@ def snaphot(path):
         base64string = base64string.replace('\n', '')
         # Add encoded credentials to the request
         request.add_header("Authorization", "Basic %s" % base64string)
-        event_id = str(Event.objects.all().order_by("-id")[0].id)
         try:
-            data = urllib2.urlopen(request).read()
+            data = urllib2.urlopen(request,timeout=10).read()
             strnow = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             name = event_id + '_' + strnow + '.jpg'
             name = os.path.join(path, name)
@@ -188,7 +187,7 @@ def send_save_audio():
             context = zmq.Context() 
             socket = context.socket(zmq.REQ)
             socket.setsockopt(zmq.LINGER, 10)
-            socket.connect('tcp://' + iptools.long2ip(node.ip) + ':5555')
+            socket.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
             socket.send('save_audio;0;0')       
             socket.close()
             context.term()          
@@ -206,12 +205,12 @@ def send_screenshot():
             context = zmq.Context() 
             socket = context.socket(zmq.REQ)
             socket.setsockopt(zmq.LINGER, 10)
-            socket.connect('tcp://' + iptools.long2ip(node.ip) + ':5555')
+            socket.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
             socket.send('screenshot;0;0')       
             socket.close()
             context.term()          
         except Exception, e:
-            pass    
+            pass 
     
           
 def send_command(command):
@@ -230,7 +229,7 @@ def send_command(command):
             context = zmq.Context() 
             socket = context.socket(zmq.REQ)
             socket.setsockopt(zmq.LINGER, 10)
-            socket.connect('tcp://' + iptools.long2ip(node.ip) + ':5555')
+            socket.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
             socket.send('command;0;%s' % command)       
             socket.close()
             context.term()          

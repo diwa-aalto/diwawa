@@ -181,11 +181,11 @@ def event(request):
             if activity:
                 session = activity.session
             else:
-                session = None    
+                session = None  
             e = Event(title=title,session=session)
             e.save()
             project_path = activity.project.dir if activity else None
-            utils.snaphot(project_path)
+            utils.snaphot(project_path, e.id)
             utils.send_screenshot()
             utils.send_save_audio()
             response = "OK"
