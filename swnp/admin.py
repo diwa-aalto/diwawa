@@ -12,7 +12,7 @@ from models import (Company, Project, Session, Event, Action, User, File,
 class CompanyInline(admin.StackedInline):
     model = Company
 
-    
+
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'company', 'dir',)
     list_display_links = ('name',)
@@ -49,7 +49,7 @@ class ExtendedFlatPageAdmin(FlatPageAdmin):
                            )
                 }
          ),
-    )     
+    )
 
 
 admin.site.register(Project, ProjectAdmin)

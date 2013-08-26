@@ -27,10 +27,10 @@ def custom_login(f):
                         user = authenticate(username=user.username,
                                             password=user.username)
                         login(args[0], user)
-                    except Exception, e:
-                        print str(e)    
-                    break           
-            if not request.user.is_authenticated():    
+                    except Exception, err:
+                        print str(err)
+                    break
+            if not request.user.is_authenticated():
                 # failed, login guest account
                 user, created = User.objects.get_or_create(username='Guest')
                 if created:
@@ -38,6 +38,6 @@ def custom_login(f):
                     user.save()
                 user = authenticate(username=user.username,
                                     password=user.username)
-                login(args[0], user)   
+                login(args[0], user)
         return f(*args, **kwargs)
     return wrapper

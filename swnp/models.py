@@ -6,14 +6,14 @@ from taggit.managers import TaggableManager
 class Company(models.Model):
     """ Company model. """
     name = models.CharField(max_length=50)
-    
+
     class Meta:
         db_table = u'company'
-    
-    def __unicode__(self):
-        return self.name 
 
-       
+    def __unicode__(self):
+        return self.name
+
+
 class User(models.Model):
     """ User model. """
     name = models.CharField(max_length=50)
@@ -21,28 +21,28 @@ class User(models.Model):
     title = models.CharField(max_length=50, blank=True)
     department = models.CharField(max_length=100, blank=True)
     company = models.ForeignKey(Company, null=True, blank=True)
-    
+
     class Meta:
         db_table = u'user'
-        
+
     def __unicode__(self):
-        return self.name    
- 
-        
+        return self.name
+
+
 class Project(models.Model):
     """ Project model. """
     name = models.CharField(max_length=50)
     company = models.ForeignKey(Company)
     dir = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=40, null=True, blank=True)
-    
+
     class Meta:
         db_table = u'project'
-    
+
     def __unicode__(self):
         return self.name
 
-    
+
 class Session(models.Model):
     """ Session model. """
     name = models.CharField(max_length=50, null=True, blank=True)
@@ -50,14 +50,14 @@ class Session(models.Model):
     starttime = models.DateTimeField(null=True, blank=True)
     endtime = models.DateTimeField(null=True, blank=True)
     previous_session = models.ForeignKey('self', null=True, blank=True)
-    
+
     def get_duration(self):
         duration = self.starttime - self.endtime
         return duration.total_seconds()
-    
+
     class Meta:
-        db_table = u'session' 
-    
+        db_table = u'session'
+
     def __unicode__(self):
         if self.name:
             return self.name
@@ -67,15 +67,15 @@ class Session(models.Model):
             start = self.starttime.strftime('%d.%m.%Y %H:%M')
         if self.endtime:
             end = self.endtime.strftime('%d.%m.%Y %H:%M')
-        return '%s - %s' % (start, end)     
+        return '%s - %s' % (start, end)
 
 
 class Action(models.Model):
     name = models.CharField(max_length=50, blank=True)
-    
+
     class Meta:
         db_table = u'action'
-    
+
     def __unicode__(self):
         return self.name
 
@@ -90,36 +90,36 @@ class Computer(models.Model):
     pgm_group = models.SmallIntegerField(null=False, blank=False, default=0)
     user = models.ForeignKey(User, null=True, blank=True)
     wos_id = models.IntegerField(null=True, blank=True)
-    
+
     class Meta:
         db_table = u'computer'
-    
+
     def __unicode__(self):
-        return self.name    
+        return self.name
 
 
 class Event(models.Model):
-    desc = models.CharField(max_length=500,null=True, blank=True)
+    desc = models.CharField(max_length=500, null=True, blank=True)
     time = models.DateTimeField(auto_now_add=True)
     session = models.ForeignKey(Session, null=True, blank=True)
-    title = models.CharField(max_length=40,null=False, blank=False)
+    title = models.CharField(max_length=40, null=False, blank=False)
     tags = TaggableManager(blank=True)
-    
+
     class Meta:
         db_table = u'event'
-        
+
     def __unicode__(self):
-        return str(self.title)   
+        return str(self.title)
 
 
 class File(models.Model):
     path = models.CharField(max_length=255)
     project = models.ForeignKey(Project, null=True, blank=True)
     tags = TaggableManager(blank=True)
-    
+
     class Meta:
         db_table = u'file'
-    
+
     def __unicode__(self):
         return self.path
 
@@ -131,19 +131,19 @@ class Fileaction(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     computer = models.ForeignKey(Computer, null=True, blank=True)
     session = models.ForeignKey(Session, null=True, blank=True)
-    
+
     class Meta:
         db_table = u'fileaction'
-    
+
     def __unicode__(self):
-        return "%s:%s" % (self.action.name,self.file.path)
+        return "%s:%s" % (self.action.name, self.file.path)
 
 
 class Projectmembers(models.Model):
     project = models.ForeignKey(Project, null=True, db_column='Project',
                                 blank=True)
-    user = models.ForeignKey(User, null=True, db_column='User', blank=True) 
-    
+    user = models.ForeignKey(User, null=True, db_column='User', blank=True)
+
     class Meta:
         db_table = u'projectmembers'
 
@@ -158,14 +158,14 @@ class Activity(models.Model):
         db_table = u'activity'
 
     def save(self, *args, **kwargs):
-        super(Activity, self).save(*args, **kwargs) 
+        super(Activity, self).save(*args, **kwargs)
 
-    @classmethod    
+    @classmethod
     def unset_all(act):
         qs = Activity.objects.filter(active=True)
         for item in qs:
-            item.active=False
-            item.save()    
+            item.active = False
+            item.save()
 
     def __unicode__(self):
         return "%s - %s - %s" % (self.project.name, self.session,
@@ -174,19 +174,19 @@ class Activity(models.Model):
 
 class Sessioncomputers(models.Model):
     session = models.ForeignKey(Session, null=True, db_column='Session',
-                                blank=True) 
+                                blank=True)
     computer = models.ForeignKey(Computer, null=True, db_column='Computer',
-                                 blank=True) 
-    
+                                 blank=True)
+
     class Meta:
         db_table = u'sessioncomputers'
 
 
 class Sessionparticipants(models.Model):
     session = models.ForeignKey(Session, null=True, db_column='Session',
-                                blank=True) 
-    user = models.ForeignKey(User, null=True, db_column='User', blank=True) 
-    
+                                blank=True)
+    user = models.ForeignKey(User, null=True, db_column='User', blank=True)
+
     class Meta:
         db_table = u'sessionparticipants'
 

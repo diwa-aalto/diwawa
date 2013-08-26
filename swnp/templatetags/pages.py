@@ -15,10 +15,10 @@ def show_ordered_flatpages_menu(flatpage_id):
     flatPages = ExtendedFlatPage.objects.all().order_by('show_after')
     myString = ""
     for myPage in flatPages:
-        myString += page_li(myPage, flatpage_id==myPage.id)
+        myString += page_li(myPage, flatpage_id == myPage.id)
     return myString
 
-def page_li( thePage, active ):
+def page_li(thePage, active):
     """ Creates a li item from a flatpage 
     
         :param thePage: The FlatPage 
@@ -26,7 +26,12 @@ def page_li( thePage, active ):
         :param active: Is the page currently selected page
         :type active: Bool
     """
-    return """<li %s><a href="%s" title="%s">%s</a></li>""" % ( 'class="active"' if active else '',thePage.url, thePage.alt_text, thePage.title )
+    return """<li %s><a href="%s" title="%s">%s</a></li>""" % (
+                                                               'class="active"'
+                                                               if active else '',
+                                                               thePage.url,
+                                                               thePage.alt_text,
+                                                               thePage.title)
 
 @register.simple_tag
 def show_ordered_flatpages_content():
@@ -34,10 +39,10 @@ def show_ordered_flatpages_content():
     flatPages = ExtendedFlatPage.objects.all().order_by('show_after')
     myString = ""
     for myPage in flatPages:
-        myString += page_content( myPage )
+        myString += page_content(myPage)
     return myString
 
-def page_content( thePage ):
+def page_content(thePage):
     """ Creates a section tab for a page.
         
         :param thePage: The FlatPage
@@ -49,5 +54,5 @@ def page_content( thePage ):
                '</div></div></section>')
     title = thePage.title.lower()
     content = thePage.content
-               
+
     return pstring % (title, content)

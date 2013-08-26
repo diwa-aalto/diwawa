@@ -1,3 +1,4 @@
+""" Utility functions """
 import zmq
 import glob
 import socket
@@ -8,11 +9,10 @@ import urllib2
 import datetime
 import os
 import sys
-from models import Company, Computer
+from swnp.models import Computer
 from django.db.models import Count
 from datetime import timedelta
 from django.conf import settings
-import re
 
 IP_ADDR = getattr(settings, 'IP_ADDR', '')
 MACS = getattr(settings, 'MACS', [])
@@ -32,113 +32,122 @@ TV_COMMANDS = {'powr0':'POWR0   \r',
                'powr1':'POWR1   \r',
                'hdmi1':'IAVD4   \r'
 }
-     
-def send_open_path(target, ip, path):
+
+def send_open_path(target, ip_addr, path):
     """
     Send open path to target at ip.
 
     :param target: The target's wos id.
     :type target: String
 
-    :param ip: IP address
-    :type ip: Long
+    :param ip_addr: IP address
+    :type ip_addr: Long
 
     :param path: File path
     :type path: String
 
     """
     try:
-        context = zmq.Context() 
-        socket = context.socket(zmq.REQ)
-        socket.setsockopt(zmq.LINGER, 10)
-        socket.connect('tcp://' + iptools.ipv4.long2ip(ip) + ':5555')
-        if target and ip and path:
-            socket.send('open;' + target + ';' + str(path))
-        socket.close()
-        context.term()          
-    except Exception, e:
+        context = zmq.Context()
+        sock = context.socket(zmq.REQ)
+        sock.setsockopt(zmq.LINGER, 10)
+        sock.connect('tcp://' + iptools.ipv4.long2ip(ip_addr) + ':5555')
+        if target and ip_addr and path:
+            sock.send('open;' + target + ';' + str(path))
+        sock.close()
+        context.term()
+    except Exception:
         pass
-        
-        
+
+
 def date_handler(obj):
-    return obj.isoformat() if hasattr(obj, 'isoformat') else obj 
-     
-       
-def send_open_url(target, ip, url):
+    """ JSON handler for Date objects"""
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
+
+def send_open_url(target, ip_addr, url):
     """
-    Send open url to target at ip.
+    Send open url to target at ip_addr.
 
     :param target: The target's wos id.
     :type target: String
 
-    :param ip: IP address
-    :type ip: Long
+    :param ip_addr: IP address
+    :type ip_addr: Long
 
     :param url: URL
     :type url: String
 
     """
     try:
-        context = zmq.Context() 
-        socket = context.socket(zmq.REQ)
-        socket.setsockopt(zmq.LINGER, 10)
-        socket.connect('tcp://' + iptools.ipv4.long2ip(ip) + ':5555')
-        if target and ip and url:
-            socket.send('url;' + target + ';' + str(url))       
-        socket.close()
-        context.term()          
-    except Exception, e:
+        context = zmq.Context()
+        sock = context.socket(zmq.REQ)
+        sock.setsockopt(zmq.LINGER, 10)
+        sock.connect('tcp://' + iptools.ipv4.long2ip(ip_addr) + ':5555')
+        if target and ip_addr and url:
+            sock.send('url;' + target + ';' + str(url))
+        sock.close()
+        context.term()
+    except Exception:
         pass
 
 def send_chat_message(sendername, msg):
+    """ Sends an entered chat message to all screen nodes.
+
+        :param sendername: The name of the sender
+        :type sendername: String
+        :param msg: The message
+        :type msg: String
+
+        """
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
                                     timedelta(minutes=2), screens__gt=0)
     nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
     for node in nodes:
         try:
-            context = zmq.Context() 
-            socket = context.socket(zmq.REQ)
-            socket.setsockopt(zmq.LINGER, 10)
+            context = zmq.Context()
+            sock = context.socket(zmq.REQ)
+            sock.setsockopt(zmq.LINGER, 10)
             node_ip = iptools.ipv4.long2ip(int(node.ip))
             sys.stderr.write('SENDING MESSAGE TO: %s\n' % str(node_ip))
             sys.stderr.flush()
-            socket.connect('tcp://' + node_ip + ':5555')
+            sock.connect('tcp://' + node_ip + ':5555')
             if sendername and msg:
-                socket.send('chatmsg;' + str(node.id) + ';' +
+                sock.send('chatmsg;' + str(node.id) + ';' +
                             base64.b64encode((sendername + ':' + msg).encode(
-                                                                    'utf-8')))       
-            socket.close()
-            context.term()     
-        except Exception, e:
-            sys.stderr.write('EXCEPTION: %s\n' % str(e))
+                                                                    'utf-8')))
+            sock.close()
+            context.term()
+        except Exception, err:
+            sys.stderr.write('EXCEPTION: %s\n' % str(err))
             sys.stderr.flush()
- 
-        
+
+
 def awake():
     """
     Sends WakeOnLAN packet to the MAC addresses in MACS.
-    Also, turns on TV's (SHARP IP control).
+    Also, turns on TV'sock (SHARP IP control).
 
     """
     # send wol packet to the machines
     for mac in MACS:
-        t = iter(mac)
-        mac_s = ':'.join(a + b for a, b in zip(t, t))
+        iterator = iter(mac)
+        mac_s = ':'.join(a + b for a, b in zip(iterator, iterator))
         wol.send_magic_packet(mac_s, broadcast='192.168.1.255')
     # turn on the tvs, switch to hdmi1
-    for tv in TVS:
+    for televisio in TVS:
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect(tv)
-            s.sendall(TV_COMMANDS['powr1'])
-            s.recv(9)
-            s.sendall(TV_COMMANDS['hdmi1'])
-            s.recv(9)
-            s.sendall(TV_COMMANDS['hdmi1'])
-            s.recv(9)
-            s.close()
-        except Exception, e:
-            pass  
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect(televisio)
+            sock.sendall(TV_COMMANDS['powr1'])
+            sock.recv(9)
+            sock.sendall(TV_COMMANDS['hdmi1'])
+            sock.recv(9)
+            sock.sendall(TV_COMMANDS['hdmi1'])
+            sock.recv(9)
+            sock.close()
+        except Exception:
+            pass
 
 
 def snaphot(path, event_id):
@@ -150,7 +159,7 @@ def snaphot(path, event_id):
 
      """
     if path and event_id:
-        path = os.path.join(PROJECTS_PATH,path[path.find('Projects') + 8:])
+        path = os.path.join(PROJECTS_PATH, path[path.find('Projects') + 8:])
         path = os.path.join(path, 'Snapshots').replace('\\', '/')
         try:
             if not os.path.exists(path):
@@ -166,7 +175,7 @@ def snaphot(path, event_id):
         # Add encoded credentials to the request
         request.add_header("Authorization", "Basic %s" % base64string)
         try:
-            data = urllib2.urlopen(request,timeout=10).read()
+            data = urllib2.urlopen(request, timeout=10).read()
             strnow = datetime.datetime.now().strftime("%d%m%Y%H%M%S")
             name = event_id + '_' + strnow + '.jpg'
             name = os.path.join(path, name)
@@ -175,44 +184,44 @@ def snaphot(path, event_id):
             output.close()
         except Exception:
             pass
-        
+
 
 def send_save_audio():
     """ Send save audio message to responsive node. """
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
                                     timedelta(minutes=2), responsive=1)
     nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
-    for node in nodes[0:1]: 
+    for node in nodes[0:1]:
         try:
-            context = zmq.Context() 
-            socket = context.socket(zmq.REQ)
-            socket.setsockopt(zmq.LINGER, 10)
-            socket.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
-            socket.send('save_audio;0;0')       
-            socket.close()
-            context.term()          
-        except Exception, e:
+            context = zmq.Context()
+            sock = context.socket(zmq.REQ)
+            sock.setsockopt(zmq.LINGER, 10)
+            sock.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
+            sock.send('save_audio;0;0')
+            sock.close()
+            context.term()
+        except Exception:
             pass
-    
+
 
 def send_screenshot():
     """ Send screenshot message to SCREEN nodes. """
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
                                     timedelta(minutes=2), screens__gt=0)
     nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
-    for node in nodes: 
+    for node in nodes:
         try:
-            context = zmq.Context() 
-            socket = context.socket(zmq.REQ)
-            socket.setsockopt(zmq.LINGER, 10)
-            socket.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
-            socket.send('screenshot;0;0')       
-            socket.close()
-            context.term()          
-        except Exception, e:
-            pass 
-    
-          
+            context = zmq.Context()
+            sock = context.socket(zmq.REQ)
+            sock.setsockopt(zmq.LINGER, 10)
+            sock.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
+            sock.send('screenshot;0;0')
+            sock.close()
+            context.term()
+        except Exception:
+            pass
+
+
 def send_command(command):
     """
     Send command to SCREEN nodes.
@@ -224,19 +233,19 @@ def send_command(command):
     nodes = Computer.objects.filter(time__gte=datetime.datetime.now() -
                                     timedelta(minutes=2), screens__gt=0)
     nodes = nodes.annotate(dcount=Count('name')).order_by('wos_id')
-    for node in nodes: 
+    for node in nodes:
         try:
-            context = zmq.Context() 
-            socket = context.socket(zmq.REQ)
-            socket.setsockopt(zmq.LINGER, 10)
-            socket.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
-            socket.send('command;0;%s' % command)       
-            socket.close()
-            context.term()          
-        except Exception, e:
+            context = zmq.Context()
+            sock = context.socket(zmq.REQ)
+            sock.setsockopt(zmq.LINGER, 10)
+            sock.connect('tcp://' + iptools.ipv4.long2ip(node.ip) + ':5555')
+            sock.send('command;0;%s' % command)
+            sock.close()
+            context.term()
+        except Exception:
             pass
-    
-                                   
+
+
 def ip_leases():
     """
     Return a list of IP address leases from ASUS RT-N56U router
@@ -249,7 +258,7 @@ def ip_leases():
     # Encode username and pass
     base64string = base64.encodestring('%s:%s' % (ROUTER_USERNAME,
                                                   ROUTER_PASSWORD))
-    base64string = base64string.replace('\n', '') 
+    base64string = base64string.replace('\n', '')
     # Add encoded username and pass to the request
     request.add_header("Authorization", "Basic %s" % base64string)
     try:
@@ -259,9 +268,9 @@ def ip_leases():
         leases = data[lindex + 9:rindex]
         return eval(leases)
     except Exception:
-        return [] 
-    
-    
+        return []
+
+
 def project_json_generate(dic):
     """
     Generates JSON from dict.
@@ -274,20 +283,20 @@ def project_json_generate(dic):
     """
     json = u"{"
     for key in dic:
-        d = dic[key]
+        key_value = dic[key]
         json += u'"' + key + '":'
-        if isinstance(d, dict):
-            d = [d]
-        if key == "project":    
+        if isinstance(key_value, dict):
+            key_value = [key_value]
+        if key == "project":
             json += u"{"
         else:
-            json += u"["       
-        for k in d:
+            json += u"["
+        for subkey_value in key_value:
             obj = key != "project"
             if obj:
                 json += "{"
-            for j in k:
-                val = k[j]
+            for subsubkey_value in subkey_value:
+                val = subkey_value[subsubkey_value]
                 if hasattr(val, 'isoformat'):
                     val = val.isoformat()
                 elif isinstance(val, unicode):
@@ -295,26 +304,26 @@ def project_json_generate(dic):
                 elif isinstance(val, (int, long)):
                     val = str(val)
                 else:
-                    val = ''             
-                k[j] = val
-                json += u'"' + j + u'":' + u'"' + val + u'",'
+                    val = ''
+                subkey_value[subsubkey_value] = val
+                json += u'"' + subsubkey_value + u'":' + u'"' + val + u'",'
             if json[-1:] == ',':
                 json = json[:-1]
             json += "},"
-        
+
         if json[-1:] == ',':
             json = json[:-1]
-        if key == "project":  
+        if key == "project":
             pass
         else:
-            json += u"]" 
+            json += u"]"
         json += u","
-    json = json[:-1]    
-    json += u"}"   
-    json = json.replace('\n','\\n').replace('\r','\\r')
+    json = json[:-1]
+    json += u"}"
+    json = json.replace('\n', '\\n').replace('\r', '\\r')
     return json
 
-          
+
 def get_event_files(event_id, directory):
     """
     Fetches files related to an event from project's directory.
@@ -336,16 +345,16 @@ def get_event_files(event_id, directory):
     if os.name == 'nt':
         dirn = r'\\' + dirn
     os.chdir(dirn)
-    fs = glob.glob("*%s%s_*" % (os.sep, event_id))
+    files = glob.glob("*%s%s_*" % (os.sep, event_id))
     out = []
-    for f in fs:
-        v = os.path.join('/static/Projects', directory[idx:], f)
-        v = v.encode('utf-8')
+    for filename in files:
+        filepath = os.path.join('/static/Projects', directory[idx:], filename)
+        filepath = filepath.encode('utf-8')
         if 'C:' in os.getcwd():
-            v = v.replace('C:/', '/static/').replace('\\', '/')
+            filepath = filepath.replace('C:/', '/static/').replace('\\', '/')
         else:
-            v = v.replace('share', 'static')
-        out.append(v)
+            filepath = filepath.replace('share', 'static')
+        out.append(filepath)
     return str(out).replace("'", '"')
 
 
@@ -369,11 +378,11 @@ def event_has_audio(event_id, directory):
     if os.name == 'nt':
         dirn = r'\\' + dirn
     os.chdir(dirn)
-    fs = glob.glob("Audio%s%s_*" % (os.sep, event_id))
+    files = glob.glob("Audio%s%s_*" % (os.sep, event_id))
     json = {}
-    for f in fs:
-        item = os.path.join('/static/Projects', directory[idx:], f)
+    for filename in files:
+        item = os.path.join('/static/Projects', directory[idx:], filename)
         item = item.encode('utf-8').replace('\\', '/')
-        elem = os.path.splitext(f)[1][1:].encode('utf-8')
+        elem = os.path.splitext(filename)[1][1:].encode('utf-8')
         json[elem] = item
     return '[' + str(json).replace("'", '"') + ']'
