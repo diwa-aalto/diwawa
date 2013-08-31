@@ -125,7 +125,7 @@ def event_files(request):
     if 'event_id' in request.GET:
         event_id = request.GET['event_id']
         project_id = Event.objects.get(pk=event_id).session.project.id
-        return HttpResponse(utils.get_event_files(event_id,
+        return HttpResponse(swnp.utils.get_event_files(event_id,
                                                   Project.objects.get(
                                                 pk=project_id).dir),
                             mimetype='application/json')
@@ -138,7 +138,7 @@ def has_audio(request):
         try:
             event = Event.objects.get(pk=event_id)
             project = event.session.project
-            return HttpResponse(str(utils.event_has_audio(event_id,
+            return HttpResponse(str(swnp.utils.event_has_audio(event_id,
                                                           project.dir)))
         except:
             pass
@@ -166,7 +166,7 @@ def projects_json(request):
 def shutdown(request):
     response = "ERROR"
     if request.method == 'GET':
-        utils.send_command('shutdown /p')
+        swnp.utils.send_command('shutdown /p')
         response = 'OK'
     return HttpResponse(response)
 
@@ -212,7 +212,7 @@ def chat(request):
 
 def awake(request):
     if request.method == 'GET':
-        utils.awake()
+        swnp.utils.awake()
         return HttpResponse('OK')
     return HttpResponse('ERROR')
 
@@ -312,7 +312,7 @@ def openurl(request, computer_id):
     if request.is_ajax() and request.method == 'POST':
         if 'url' in request.POST:
             url = request.POST['url'].encode('utf-8')
-            utils.send_open_url(str(comp.wos_id), comp.ip, url)
+            swnp.utils.send_open_url(str(comp.wos_id), comp.ip, url)
             return HttpResponse('SUCCESS')
     return HttpResponse('ERROR')
 

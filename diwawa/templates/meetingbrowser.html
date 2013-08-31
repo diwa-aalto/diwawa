@@ -59,6 +59,7 @@ function onselect(event) {
                                 '<img src="' + path_to_localhost(val) +
                                 '"/></a></div>');
                         } else if(val.indexOf('Audio') >= 0) {
+                            console.log('Audio ' + val);
                             var aIndex = val.lastIndexOf('.');
                             aIndex += 1;
                             var aVal = val.substring(aIndex);
@@ -126,7 +127,7 @@ var onDocumentReady = function() {
     var playerQuery = {
         swfPath: '/static/js',
         supplied: 'wav',
-        cssSelectorAncestor: '',
+        /*cssSelectorAncestor: '',
         cssSelectors: {
             videoPlay: '',
             play: '#play',
@@ -136,7 +137,7 @@ var onDocumentReady = function() {
             unmute: '#unmute',
             currentTime: '#currentTime',
             duration: '#duration'
-        },
+        },*/
         wmode: 'window'
     };
 
@@ -161,8 +162,8 @@ var onDocumentReady = function() {
     var onPlay = function(event) {
         var parent = $(this).closest('tr');
         if (jplayer_active != parent.attr('event')) {
-            $('.pause').hide();
-            $('.play').show();
+            //$('.pause').hide();
+            //$('.play').show();
             jplayer.jPlayer('clearMedia');
             jplayer_active=parent.attr('event');
         }
@@ -172,9 +173,7 @@ var onDocumentReady = function() {
         if (isEmpty($('#jquery_jplayer_1').data('jPlayer').status.media)) {
             jplayer.jPlayer('setMedia', audio_files[parent.attr('event')]);
         }
-        jplayer.jPlayer('play');
-        $(this).hide();
-        $(this).next().show();
+       $('#mediaplayer').click();
     };
 
     var onPause = function(event) {
@@ -242,6 +241,7 @@ var onDocumentReady = function() {
     };
 
     $('.fancybox').fancybox(fancyBoxObject);
+    $('#mediaplayer').fancybox(fancyBoxObject);
     $('div#loading').hide();
     $('#event_search').next().click(onEventSearchNextClick);
 
@@ -348,6 +348,9 @@ var onDocumentReady = function() {
                                 $.each(v, function() {
                                     pr_time = null;
                                     pr_file = '';
+                                    if (this.time.indexOf('.') > -1){
+                                    this.time = this.time.substring(0,this.time.lastIndexOf('.'))
+                                    }
                                     var eObj = new eventobject(
                                         this.id,
                                         'Event',
@@ -397,6 +400,7 @@ var onDocumentReady = function() {
                         toAppend += '</tr>';
                         $('table#all_events tbody').append(toAppend);
                         if (v.type=='Event') {
+                            console.log('check audio');
                             check_event_audio(v.id,'#row' + k);
                         }
                     });
@@ -440,10 +444,8 @@ function check_event_audio(event_id, obj_id) {
 			audio_files[event_id] = eval(res)[0];
 			console.log(res);
 			var myhtml = '<a tabindex="1" class="play" href="javascript:;">' +
-			             'play</a><a tabindex="1" class="pause" ' +
-			             'href="javascript:;">pause</a>';
+			             'play</a>';
 			$(obj_id + ' td:nth-child(5)').html(myhtml);
-			$(obj_id + ' a.pause').hide();
 		}
 	});
 }
@@ -548,7 +550,6 @@ function parse_projects_link(link) {
 			<div id="mytimeline" style=""></div>
 		</div>
 		<div style="width:38%;float:right;">
-			<div id="jquery_jplayer_1" class="jp-jplayer"></div>
 			<h4>Choose project for browsing</h4>
 			<select id="mbprojects">
 				<option id="mb_project_0"></option>
@@ -588,5 +589,46 @@ function parse_projects_link(link) {
 	</div>
 </div>
 <a id="edit_event_link" href="" data-fancybox-type="iframe"></a>
-
+<div id="mediaplayer" class="fancybox" style="display:none;">
+    <div id="jquery_jplayer_1" class="jp-jplayer" style="display:none;"></div>
+  <div id="jp_container_1" class="jp-audio">
+    <div class="jp-type-single">
+      <div class="jp-gui jp-interface">
+        <ul class="jp-controls">
+          <li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
+          <li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
+          <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+          <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+          <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
+          <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+        </ul>
+        <div class="jp-progress">
+          <div class="jp-seek-bar">
+            <div class="jp-play-bar"></div>
+          </div>
+        </div>
+        <div class="jp-volume-bar">
+          <div class="jp-volume-bar-value"></div>
+        </div>
+        <div class="jp-time-holder">
+          <div class="jp-current-time"></div>
+          <div class="jp-duration"></div>
+          <ul class="jp-toggles">
+            <li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
+            <li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="jp-title">
+        <ul>
+          <li>Bubble</li>
+        </ul>
+      </div>
+      <div class="jp-no-solution">
+        <span>Update Required</span>
+        To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

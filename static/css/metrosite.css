@@ -262,26 +262,24 @@ div.player-icon a{
 	display:block;
 	margin:0;
 }
-div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute,div.jp-audio a.jp-volume-max, div.jp-audio-stream a.jp-volume-max {
-	margin:0;
+div.jp-audio ul.jp-controls{
+    width: auto;
 }
-div.jp-audio div.jp-type-single div.jp-progress{
-	position:absolute;
-	left:45px;
-	top:12px;
-	width:160px;
+ul.jp-toggles, div.jp-title{
+    display: none;
 }
-div.jp-audio div.jp-volume-bar{
-	position:absolute;
-	left:223px;
-	top:17px;
-	
+
+div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute{
+
+    margin-top: 5px;
 }
-div.jp-audio{
-	height:45px;
-	padding:1px;
-	width:320px;
-	overflow:hidden;
+div.jp-audio div.jp-type-single a.jp-volume-max{
+    position: absolute;
+    margin-left: 45px;
+    margin-top: 5px;
+}
+a.jp-stop{
+    margin-left: 0;
 }
 .page-control .frames {
     border: 0px !important;
