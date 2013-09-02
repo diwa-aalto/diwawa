@@ -273,6 +273,11 @@ div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-
 
     margin-top: 5px;
 }
+div.jp-audio div.jp-type-single a.jp-unmute, a.jp-pause{
+	position: relative;
+	left: -4px;
+	
+}
 div.jp-audio div.jp-type-single a.jp-volume-max{
     position: absolute;
     margin-left: 45px;
