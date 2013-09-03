@@ -106,7 +106,7 @@ function initTimeline(data) {
 
 	// Instantiate our timeline object.
 	timeline = new links.Timeline(document.getElementById('mytimeline'));
-
+	console.log('timeline init:'+data.toSource());
 	// Draw our timeline with the created data and options
 	timeline.draw(data, options);
 	links.events.addListener(timeline, 'select', onselect);
@@ -314,14 +314,14 @@ var onDocumentReady = function() {
                                     var fpath = this.file__path;
                                     shouldX = shouldX && pr_file == fpath;
                                     if (shouldX) {
+                                    	// Append action icon to previous event
                                         var lastIndex = events.length - 1;
                                         var lastEvent = events[lastIndex];
-                                        var eHTML = '<p>';
                                         var leidc = events[this.id, lastIndex];
                                         leidc = leidc.content;
                                         var subLimit = lastEvent.content;
-                                        subLimit = subLimit.lenght - 4;
-                                        eHTML += leidc.substring(0, subLimit);
+                                        subLimit = subLimit.length - 4;
+                                        var eHTML = leidc.substring(0, subLimit);
                                         var aName = this.action__name;
                                         eHTML += fileaction_icon(aName);
                                         eHTML += '</p>';
@@ -398,7 +398,6 @@ var onDocumentReady = function() {
                         toAppend += '</tr>';
                         $('table#all_events tbody').append(toAppend);
                         if (v.type=='Event') {
-                            console.log('check audio');
                             check_event_audio(v.id,'#row' + k);
                         }
                     });
@@ -471,7 +470,8 @@ function event_content(type, event) {
     		output += '<img ' + imgDef + ' />';
     		output += '<a target="_NEW" href="' + plink + '">';
     		output += '<b id="' + event.file__id + '">' + fileName + '</b>';
-    		output += '</a><br />'+ actionTime.toString("HH:mm");
+    		output += '</a><br style="clear:both" /><span>'
+    		output += actionTime.toString("HH:mm") + '</span>';
     		output += fileaction_icon(event.action__name) + '</p>';
     		break;
 

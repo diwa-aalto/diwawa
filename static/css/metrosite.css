@@ -102,6 +102,9 @@ box-shadow: 0 0 12px #f7c331;
 .hover{
 	border: #000000 5px dashed;
 }
+div.timeline-event-content{
+	text-align: left;
+}
 #refresh_project_folder{
 	cursor: pointer;
 }
