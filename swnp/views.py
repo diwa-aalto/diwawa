@@ -55,23 +55,13 @@ def index(request):
         tab = request.REQUEST['tab']
     else:
         tab = 'diwaweb'
-
-    projects = []
-    for project in Project.objects.filter(company__id=1).order_by('name'):
-        if (activeProject) and (project.id == activeProject.id):
-            projects.append(project)
-            continue
-        if (project.password == None) or (len(project.password) < 1):
-            projects.append(project)
     result = None
     try:
         result = render_to_response(
                "metro.html",
                    {'activity': activity,
                     'tab': tab,
-                    'nodes': nodes,
-                    'chat_id': room.id if room else None,
-                    'projects': projects
+                    'chat_id': room.id if room else None
                     },
                 context_instance=RequestContext(request)
             )

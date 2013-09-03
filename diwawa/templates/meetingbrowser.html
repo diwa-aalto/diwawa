@@ -127,17 +127,6 @@ var onDocumentReady = function() {
     var playerQuery = {
         swfPath: '/static/js',
         supplied: 'wav',
-        /*cssSelectorAncestor: '',
-        cssSelectors: {
-            videoPlay: '',
-            play: '#play',
-            pause: '#pause',
-            stop: '#stop',
-            mute: '#mute',
-            unmute: '#unmute',
-            currentTime: '#currentTime',
-            duration: '#duration'
-        },*/
         wmode: 'window'
     };
 
@@ -269,7 +258,15 @@ var onDocumentReady = function() {
             $('div#loading').show();
             $('table#all_events tbody').empty();
             $('#all_events').dataTable().fnClearTable();
-
+			if(mbproject == 'mb_project_0'){
+				$('div#loading').hide();
+				$('div#mytimeline').append('<div class="notices">'+
+										   '<div class="bg-color-red">'+
+										   '<div class="notice-header">'+
+										   'No Project Selected</div></div>'+
+										   '</div>');
+				return
+			}
             var aObject = {
                 type: 'GET',
                 url: '/projects/' + mbproject + '/',
@@ -349,7 +346,8 @@ var onDocumentReady = function() {
                                     pr_time = null;
                                     pr_file = '';
                                     if (this.time.indexOf('.') > -1){
-                                    this.time = this.time.substring(0,this.time.lastIndexOf('.'))
+                                    this.time = this.time.substring(0,
+                                    				this.time.lastIndexOf('.'));
                                     }
                                     var eObj = new eventobject(
                                         this.id,
@@ -418,6 +416,11 @@ var onDocumentReady = function() {
                 error: function (xhr, textStatus, errorThrown) {
                     console.log(xhr.responseText);
                     $('div#loading').hide();
+                    $('div#mytimeline').append('<div class="notices">'+
+                    						   '<div class="bg-color-red">'+
+                    						   '<div class="notice-header">'+
+                    						   'Error fetching project data'+
+                    						   '</div></div></div>');
                 }
             };
             $.ajax(aObject);
@@ -442,7 +445,6 @@ function check_event_audio(event_id, obj_id) {
 	$.get('/event_has_audio/', {'event_id': event_id}, function(res) {
 		if (res != '[{}]' && res != 'False') {
 			audio_files[event_id] = eval(res)[0];
-			console.log(res);
 			var myhtml = '<a tabindex="1" class="play" href="javascript:;">' +
 			             'play</a>';
 			$(obj_id + ' td:nth-child(5)').html(myhtml);
@@ -620,9 +622,7 @@ function parse_projects_link(link) {
         </div>
       </div>
       <div class="jp-title">
-        <ul>
-          <li>Bubble</li>
-        </ul>
+        <ul></ul>
       </div>
       <div class="jp-no-solution">
         <span>Update Required</span>
