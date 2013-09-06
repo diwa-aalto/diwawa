@@ -223,7 +223,7 @@ def activity(request):
         return HttpResponse(json.dumps(result, default=swnp.utils.date_handler),
                             mimetype='application/json')
     else:
-        return HttpResponse(json.dumps({'status':'error'}),
+        return HttpResponse(json.dumps({'status':'ERROR'}),
                             mimetype='application/json')
 
 
@@ -253,7 +253,7 @@ def nodes(request):
         return HttpResponse(json.dumps(node_list, default=swnp.utils.date_handler),
                             mimetype='application/json')
     else:
-        return HttpResponse(json.dumps({'status':'error'}),
+        return HttpResponse(json.dumps({'status':'ERROR'}),
                             mimetype='application/json')
 
 
