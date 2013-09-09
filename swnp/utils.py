@@ -53,7 +53,7 @@ def send_open_path(target, ip_addr, path):
         sock.setsockopt(zmq.LINGER, 10)
         sock.connect('tcp://' + iptools.ipv4.long2ip(ip_addr) + ':5555')
         if target and ip_addr and path:
-            sock.send('open;' + target + ';' + str(path))
+            sock.send('open;' + target + ';' + unicode(path).encode('utf-8'))
         sock.close()
         context.term()
     except Exception:

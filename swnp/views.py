@@ -272,7 +272,7 @@ def upload(request, computer_id):
             uploaded_path = None
             if 'file' in request.POST:
                 # We are handling a file link
-                send_path = [request.POST['file'].encode('utf-8')]
+                send_path = [request.POST['file']]
             else:
                 # We are uploading files
                 uploaded_path = handle_uploaded_file(request.FILES, path)
@@ -286,7 +286,7 @@ def upload(request, computer_id):
                 if 'file' in request.POST and IP_ADDR != "127.0.0.1":
                     send_path = [w.replace(
                                            PROJECTS_PATH[:PROJECTS_PATH.find(
-                                            'Projects')], '\\\\' + IP_ADDR
+                                            'Projects')]-1, '\\\\' + IP_ADDR
                                            ).replace('/', '\\')
                                  for w in send_path]
                 swnp.utils.send_open_path(str(comp.wos_id), comp.ip, send_path)
