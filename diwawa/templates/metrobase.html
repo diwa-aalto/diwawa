@@ -70,6 +70,10 @@
 		#dropdown-1 li#custom:hover{
 			background-color: #2D89EF;
 		}
+		.nav-bar .nav-bar-inner .pull-menu:before {
+		    font-size: 15pt;
+		    top: 0px;
+		}
 	</style>
 	<script type="text/javascript">
 
@@ -151,6 +155,15 @@
 			        e.preventDefault();
 			    });
 			});
+			$('span.pull-menu').click(function(){
+				console.log('span clicked');
+				var menu = $('ul.menu');
+				if (menu.css('display') == 'none'){
+					menu.css('display', 'block');
+				}else{
+					menu.css('display', 'none');
+				}
+				});
 			$("body").emailSpamProtection("email");		
 	    	$('.filedownload').click(function(e) {
 	   			e.preventDefault();  //stop the browser from following
@@ -174,7 +187,8 @@
 			
 			<div class="nav-bar">
 	   			<div class="nav-bar-inner">
-	        		
+	        		<span class="pull-menu"></span>
+	        		<div class="clearfix"></div>
 					<ul class="menu">
 						<li {% if tab == 'diwaweb'%} class="active"{% endif %}><a href="/" title="DiWa Web Application">Web Application</a></li>
 						<li {% if tab == 'diwamb'%} class="active"{% endif %}><a href="/mb/" title="DiWa Meeting Browser">Meeting Browser</a></li>
