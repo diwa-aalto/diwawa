@@ -4,7 +4,7 @@
         };
 
         var $this = $(this)
-            , $ul = $this.find("ul")
+            , $ul = $this.children("ul")
             , $selectors = $ul.find("li a")
             , $selector = $ul.find(".active a")
             , $frames = $this.find(".frames .frame")
@@ -12,6 +12,13 @@
             ;
 
         var initSelectors = function(selectors){
+            $.each(selectors, function(i, s){
+                if ($(s).parent("li").hasClass("active")) {
+                    var target = $(s).attr("href");
+                    $(target).show();
+                }
+            })
+
             selectors.on('click', function(e){
                 e.preventDefault();
                 var $a = $(this);
