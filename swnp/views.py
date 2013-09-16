@@ -23,6 +23,7 @@ SCREEN_IMAGES = getattr(settings, 'SCREEN_IMAGES', '/')
 STATIC_PATHS = getattr(settings, 'STATICFILES_DIRS', '/')
 STATIC_PATH = STATIC_PATHS[0]
 TEMP_DIR = getattr(settings, 'TEMP_DIR', '/')
+TESTING = getattr(settings, 'TESTING', False)
 UNSETTED = False
 
 
@@ -335,16 +336,17 @@ def dirlist(request):
     try:
         r = ['<ul class="jqueryFileTree" style="display: none;">']
         directory_path = urllib.unquote(request.POST.get('dir', TEMP_DIR))
-        directory = directory_path[directory_path.rfind("\\"):]
-        while directory.startswith("\\") or directory.startswith("/"):
-            directory = directory[1:]
-        directory_path = unicode(os.path.join(PROJECTS_PATH,
-                                directory_path[directory_path.find(
-                                'Projects') + 9:]))
-        directory_path = directory_path.replace('\\', os.sep).replace('/',
-                                                                      os.sep)
-        if os.name == 'nt':
-            directory_path = r'\\' + directory_path
+        if not TESTING:
+            directory = directory_path[directory_path.rfind("\\"):]
+            while directory.startswith("\\") or directory.startswith("/"):
+                directory = directory[1:]
+            directory_path = unicode(os.path.join(PROJECTS_PATH,
+                                    directory_path[directory_path.find(
+                                    'Projects') + 9:]))
+            directory_path = directory_path.replace('\\', os.sep).replace('/',
+                                                                          os.sep)
+            if os.name == 'nt':
+                directory_path = r'\\' + directory_path
         for file in os.listdir(directory_path):
             filepath = os.path.join(directory_path, file)
             if os.path.isdir(filepath):
@@ -359,8 +361,8 @@ def dirlist(request):
                                                                      file))
         r.append('</ul>')
     except Exception, ext:
-        r.append('Could not load directory_path(%s): %s' % (directory_path,
-                                                            str(ext)))
+        r.append('Could not load directory_path(%s): %s' % (directory_path, str(ext)))
+        print   'Could not load directory_path(%s): %s' % (directory_path, str(ext))
     r.append('</ul>')
     return HttpResponse(''.join(r))
 
