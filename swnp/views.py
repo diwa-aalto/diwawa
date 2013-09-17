@@ -287,7 +287,7 @@ def upload(request, computer_id):
                 if 'file' in request.POST and IP_ADDR != "127.0.0.1":
                     send_path = [w.replace(
                                            PROJECTS_PATH[:PROJECTS_PATH.find(
-                                            'Projects')]-1, '\\\\' + IP_ADDR
+                                            'Projects')-1], '\\\\' + IP_ADDR
                                            ).replace('/', '\\')
                                  for w in send_path]
                 swnp.utils.send_open_path(str(comp.wos_id), comp.ip, send_path)
@@ -350,7 +350,7 @@ def dirlist(request):
         for file in os.listdir(directory_path):
             filepath = os.path.join(directory_path, file)
             if os.path.isdir(filepath):
-                r.append('<li class="directory_path collapsed"><a href="#"'
+                r.append('<li class="directory collapsed"><a href="#"'
                          ' rel="%s/">%s</a></li>' % (filepath, file))
             else:
                 ext = os.path.splitext(file)[1][1:]  # get .ext and remove dot
