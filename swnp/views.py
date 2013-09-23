@@ -350,13 +350,13 @@ def dirlist(request):
         for file in os.listdir(directory_path):
             filepath = os.path.join(directory_path, file)
             if os.path.isdir(filepath):
-                r.append('<li class="directory collapsed"><a href="#"'
-                         ' rel="%s/">%s</a></li>' % (filepath, file))
+                r.append(u'<li class="directory collapsed"><a href="#"'
+                         u' rel="%s/">%s</a></li>' % (filepath, file))
             else:
                 ext = os.path.splitext(file)[1][1:]  # get .ext and remove dot
-                r.append('<li class="file ext_%s">'
-                         '<a href="#" rel="%s" draggable="true"'
-                         ' ondragstart="drag(event)">%s</a></li>' % (ext,
+                r.append(u'<li class="file ext_%s">'
+                         u'<a href="#" rel="%s" draggable="true"'
+                         u' ondragstart="drag(event)">%s</a></li>' % (ext,
                                                                      filepath,
                                                                      file))
         r.append('</ul>')
