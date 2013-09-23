@@ -212,15 +212,22 @@ def awake(request):
 def activity(request):
     if request.is_ajax() and request.method == 'GET':
         activity = get_activity()
+        try:
+            project = activity.project
+        except Project.DoesNotExist:
+            project = None
+        try:
+            session = activity.session
+        except Session.DoesNotExist:
+            session = None
+        
         if activity:
             room = Room.objects.get_or_create(activity.project)
         else:
             room = None
         result = {'status':'OK', 'room':room.id if room else 0,
-                  'project':model_to_dict(activity.project) if activity and
-                  activity.project else 0,
-                  'session':model_to_dict(activity.session) if activity and
-                  activity.session else 0}
+                  'project':model_to_dict(project) if activity and project else 0,
+                  'session':model_to_dict(session) if activity and session else 0}
         return HttpResponse(json.dumps(result, default=swnp.utils.date_handler),
                             mimetype='application/json')
     else:
