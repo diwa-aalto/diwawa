@@ -103,7 +103,7 @@ def project_json(request, project_id):
 
     if project:
         sessions = list(project.session_set.all().extra(where=['endtime-starttime>60']).values('id', 'starttime', 'endtime', 'name'))
-        actions = list(Fileaction.objects.filter(Q(file__project=project) | Q(session__project=project)).exclude(Q(file__path__icontains='Snapshots') | Q(file__path__icontains='Audio') | Q(file__path__icontains='Screenshots')).order_by('action_time').values('id', 'file__path', 'file__id', 'action__name', 'action_time'))
+        actions = list(Fileaction.objects.filter(Q(file__project=project) | Q(session__project=project)).exclude(Q(file__path__icontains='Snapshots') | Q(file__path__icontains='Audio') | Q(file__path__icontains='Screenshots') | Q(file__path__startswith='~$')).order_by('action_time').values('id', 'file__path', 'file__id', 'action__name', 'action_time'))
         events = list(Event.objects.filter(session__project=project, time__isnull=False).order_by('time').values('id', 'time', 'desc', 'title'))
         json_dict = {'project':model_to_dict(project), 'sessions':sessions, 'fileactions':actions, 'events':events}
         return HttpResponse(swnp.utils.project_json_generate(json_dict),
