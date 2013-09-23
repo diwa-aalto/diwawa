@@ -45,7 +45,7 @@
 	{% endif %}
 	
 	$("#fchat").submit(function() {
-		var name =  unescape(encodeURIComponent($("input#name").val()));
+		var name =  $("input#name").val();
 		$.cookie('dchat_name',name, { path: '/' });
 		init_chat({{chat_id}}, "chat");
 		$('#fchat').fadeOut(300,function(){$('#chat').fadeIn(300,function(){

@@ -110,8 +110,8 @@ function sync_messages() {
 function layout_and_bind(html_el_id) {
 		// layout stuff
 		var html = '<div id="chat-messages-container">'+
-		'<div id="chat-messages"> </div>'+
-		'<div id="chat-last"> </div>'+
+		'<div id="chat-messages"> <a href="#" id="load_chat_history">Load history</a> </div>'+
+		'<div id="chat-last"></div>'+
 		'</div>'+
 		'<form id="chat-form">'+
 		'<input name="message" type="text" class="message" />'+
@@ -155,16 +155,27 @@ function layout_and_bind(html_el_id) {
             $('#chat-form .message').val('');
             return false;
 	});
+	$('a#load_chat_history').click(function(e){
+		e.preventDefault();
+		get_messages(true);
+	});
 };
 
 /**
  * Gets the list of messages from the server and appends the messages to the chatbox
  */
 
-function get_messages() {
+function get_messages(all_messages) {
+	all_messages = typeof all_messages !== 'undefined' ? all_messages : false;
+	if (all_messages){
+		$('#chat-messages').empty();
+		data = {id:window.chat_room_id, offset: 0}
+	}else{
+	data = {id:window.chat_room_id, offset: window.last_received}
+	}
     $.ajax({
         type: 'POST',
-        data: {id:window.chat_room_id, offset: window.last_received},
+        data: data,
         url:'/chat/receive/',
 		dataType: 'json',
 		csrfmiddlewaretoken: '{{ csrf_token }}',  

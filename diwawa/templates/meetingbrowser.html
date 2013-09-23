@@ -532,7 +532,7 @@ function edit_event_click(event_id) {
 
 
 function parse_projects_link(link) {
-	var baseurl = '/Projects/';
+	var baseurl = '/static/Projects/';
 	baseurl += link.substr(link.indexOf('Projects') + 9);
 	return baseurl.replace(/\\/g, '/');
 }

@@ -175,10 +175,10 @@ def event(request):
                 session = activity.session
             else:
                 session = None
-            err = Event(title=title, session=session)
-            err.save()
+            evt = Event(title=title, session=session)
+            evt.save()
             project_path = activity.project.dir if activity else None
-            swnp.utils.snaphot(project_path, err.id)
+            swnp.utils.snaphot(project_path, evt.id)
             swnp.utils.send_screenshot()
             swnp.utils.send_save_audio()
             response = "OK"
