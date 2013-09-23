@@ -212,15 +212,18 @@ def awake(request):
 def activity(request):
     if request.is_ajax() and request.method == 'GET':
         activity = get_activity()
-        try:
-            project = activity.project
-        except Project.DoesNotExist:
+        if activity:
+            try:
+                project = activity.project
+            except Project.DoesNotExist:
+                project = None
+            try:
+                session = activity.session
+            except Session.DoesNotExist:
+                session = None
+        else:
             project = None
-        try:
-            session = activity.session
-        except Session.DoesNotExist:
             session = None
-        
         if activity:
             room = Room.objects.get_or_create(activity.project)
         else:

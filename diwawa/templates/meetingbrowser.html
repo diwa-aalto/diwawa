@@ -463,7 +463,7 @@ function event_content(type, event) {
     		    fileExtension = '_blank';
     		}
     		var fileIcon = '/static/img/filetypes/' + fileExtension + '.png';
-    		var plink = parse_projects_link(event.file__path);
+    		var plink = event.file__path;
     		var style_ = 'float:left;';
     		var imgDef = 'src="' + fileIcon + '" style="' + style_ + '"';
     		output = '<p>';
