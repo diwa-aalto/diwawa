@@ -16,7 +16,6 @@ function onselect(event) {
 
   	for (var i = 0; i < selcount; i++) {
   	    var row = sel[i].row;
-  	    console.log('Selected: ' + row);
     	if (row != undefined) {
       		var item = timeline.getItem(row);
       		$('div#snapshot').empty();
@@ -43,7 +42,6 @@ function onselect(event) {
                 var dataFunction = function(data) {
                     var audio = {};
                     var keyval = function(key, val) {
-                        console.log(key + ': ' + val);
                         if (val.indexOf('Snapshots') >= 0) {
                             var snap = $('div#snapshot');
                             snap.append('<div><a class="fancybox" href="' +
@@ -59,7 +57,6 @@ function onselect(event) {
                                 '<img src="' + path_to_localhost(val) +
                                 '"/></a></div>');
                         } else if(val.indexOf('Audio') >= 0) {
-                            console.log('Audio ' + val);
                             var aIndex = val.lastIndexOf('.');
                             aIndex += 1;
                             var aVal = val.substring(aIndex);
@@ -106,7 +103,6 @@ function initTimeline(data) {
 
 	// Instantiate our timeline object.
 	timeline = new links.Timeline(document.getElementById('mytimeline'));
-	console.log('timeline init:'+data.toSource());
 	// Draw our timeline with the created data and options
 	timeline.draw(data, options);
 	links.events.addListener(timeline, 'select', onselect);
@@ -252,7 +248,6 @@ var onDocumentReady = function() {
             $('div#screenshots').empty();
             jplayer.jPlayer('clearMedia');
             mbproject = $('#mbprojects option:selected').attr('id');
-            console.log('selected id ='+mbproject);
             $('#panel_handle').click();
             $('#mytimeline').empty();
             $('div#loading').show();
@@ -413,7 +408,6 @@ var onDocumentReady = function() {
                     $('div#loading').hide();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(xhr.responseText);
                     $('div#loading').hide();
                     $('div#mytimeline').append('<div class="notices">'+
                     						   '<div class="bg-color-red">'+
@@ -532,7 +526,7 @@ function edit_event_click(event_id) {
 
 
 function parse_projects_link(link) {
-	var baseurl = 'file:///';
+	var baseurl = 'file://';
 	//baseurl += link.substr(link.indexOf('Projects') + 9);
 	baseurl += link;
 	return baseurl.replace(/\\/g, '/');
@@ -551,6 +545,7 @@ function parse_projects_link(link) {
 		<div style="width:60%;min-height:400px;height:50%;float:left;">
 			<div id="loading"><img src="/static/img/loader.gif"/></div>
 			<div id="mytimeline" style=""></div>
+			<span id="localfile_warning" style="display:none;"><i class="icon-warning"></i>Some browsers block local file links, so if you want to take advantage of these links, you will have to allow local file links for your browser. Instructions for Firefox in <a target="_NEW" href="http://kb.mozillazine.org/Firefox_%3a_Issues_%3a_Links_to_Local_Pages_Don%27t_Work">mozillazine.</a></span>
 		</div>
 		<div style="width:38%;float:right;">
 			<h4>Choose project for browsing</h4>
