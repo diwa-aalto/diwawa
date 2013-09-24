@@ -2,14 +2,8 @@
  * jQuery plugin for input elements for Metro UI CSS framework
  */
 (function($) {
-    var pluginName = 'Input',
-        initAllSelector = '.input-control',
-        paramKeys = [];
 
-    $[pluginName] = function(element, options) {
-        if (!element) {
-            return $()[pluginName]({initAll: true});
-        }
+    $.Input = function(element, options) {
 
         var defaults = {
         };
@@ -32,82 +26,78 @@
          * initialize text input element behavior
          */
         var initTextInput = function () {
-            var $helper,
+            var helper,
+                $helper,
                 input;
-            $helper = $element.children('.helper, .btn-clear');
+            helper = $element.children('.helper').get(0);
 
-            if (!$helper.get(0)) {
+            if (!helper) {
                 return;
             }
 
-            $helper.attr('tabindex', '-1');
-            $helper.attr('type', 'button');
+            $helper = $(helper);
 
-            // clear text when click on helper
+            // clear text when clock on helper
             $helper.on('click', function () {
                 input = $element.children('input');
-                if (input.prop('readonly')) {
-                    return;
-                }
-                input.val('');
+                input.attr('value', '');
                 input.focus();
-            });
+            }).on('click', function(e){e.preventDefault(); return false;});
         };
 
         /**
          * initialize password input element behavior
          */
         var initPasswordInput = function () {
-            var $helper,
+            var helper,
+                $helper,
                 password,
                 text;
-            $helper = $element.children('.helper, .btn-reveal');
-            if (!$helper.get(0)) {
+            helper = $element.children('.helper').get(0);
+            if (!helper) {
                 return;
             }
 
             text = $('<input type="text" />');
             password = $element.children('input');
-            $helper.attr('tabindex', '-1');
-            $helper.attr('type', 'button');
+            $helper = $(helper);
 
             // insert text element and hode password element when push helper
             $helper.on('mousedown', function () {
                 password.hide();
                 text.insertAfter(password);
-                text.val(password.val());
-            });
+                text.attr('value', password.attr('value'));
+            }).on('click', function(e){e.preventDefault(); return false;});
 
             // return password and remove text element
             $helper.on('mouseup, mouseout', function () {
                 text.detach();
                 password.show();
                 password.focus();
-            });
+            }).on('click', function(e){e.preventDefault(); return false;});
         };
 
         plugin.init();
 
     };
 
-    $.fn[pluginName] = function(options) {
-        var elements = options && options.initAll ? $(initAllSelector) : this;
-        return elements.each(function() {
-            var that = $(this),
-                params = {},
-                plugin;
-            if (undefined == that.data(pluginName)) {
-                $.each(paramKeys, function(index, key){
-                    params[key[0].toLowerCase() + key.slice(1)] = that.data('param' + key);
-                });
-                plugin = new $[pluginName](this, params);
-                that.data(pluginName, plugin);
+    $.fn.Input = function(options) {
+        return this.each(function() {
+            if (undefined == $(this).data('Input')) {
+                var plugin = new $.Input(this, options);
+                $(this).data('Input', plugin);
             }
         });
-    };
-    // autoinit
-    $(function(){
-        $()["Input"]({initAll: true});
-    });
+    }
 
 })(jQuery);
+
+$(function(){
+    var allInputs = $('.input-control');
+    allInputs.each(function (index, input) {
+        var params = {};
+        $input = $(input);
+
+        $input.Input(params);
+    });
+});

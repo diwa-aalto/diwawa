@@ -17,14 +17,8 @@
  * $('ratingID').RatingVote(false or 'off')         - set vote=off rating mode
  */
 (function($) {
-    var pluginName = 'Rating',
-        initAllSelector = '[data-role=rating], .rating',
-        paramKeys = ['Stars', 'Rating', 'Vote'];
 
-    $[pluginName] = function(element, options) {
-        if (!element) {
-            return $()[pluginName]({initAll: true});
-        }
+    $.Rating = function(element, options) {
 
         var defaults = {
             // stars count
@@ -187,6 +181,17 @@
 
     };
 
+    $.fn.Rating = function(options) {
+
+        return this.each(function() {
+            if (undefined == $(this).data('Rating')) {
+                var plugin = new $.Rating(this, options);
+                $(this).data('Rating', plugin);
+            }
+        });
+
+    };
+
     /**
      * get or set rating value to/from first element in set
      */
@@ -228,24 +233,17 @@
         }
     };
 
-    $.fn[pluginName] = function(options) {
-        var elements = options && options.initAll ? $(initAllSelector) : this;
-        return elements.each(function() {
-            var that = $(this),
-                params = {},
-                plugin;
-            if (undefined == that.data(pluginName)) {
-                $.each(paramKeys, function(index, key){
-                    params[key[0].toLowerCase() + key.slice(1)] = that.data('param' + key);
-                });
-                plugin = new $[pluginName](this, params);
-                that.data(pluginName, plugin);
-            }
-        });
-    };
-    // autoinit
-    $(function(){
-        $()[pluginName]({initAll: true});
-    });
-
 })(jQuery);
+
+$(function(){
+    var allratings = $('[data-role=rating], .rating');
+    allratings.each(function (index, rating) {
+        var params = {};
+        $rating = $(rating);
+        params.stars        = $rating.data('paramStars');
+        params.rating       = $rating.data('paramRating');
+        params.vote         = $rating.data('paramVote');
+
+        $rating.Rating(params);
+    });
+});
